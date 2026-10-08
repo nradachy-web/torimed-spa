@@ -180,7 +180,7 @@
 
   if (!SITE.formKey) {
     sendBtn.textContent = 'Copy request for Instagram';
-    sendNote.textContent = 'This copies your request so you can paste it into a message to Tori on Instagram.';
+    sendNote.textContent = 'This copies your request so you can paste it into a message to me on Instagram.';
   }
 
   function requestText(data) {
@@ -228,7 +228,7 @@
     if (!SITE.formKey) {
       var done = function (copied) {
         show('ok', '<h3>' + (copied ? 'Request copied' : 'Your request') + '</h3>' +
-          '<p>' + (copied ? 'Paste it into a message to Tori and she will confirm your time.' : 'Copy the text below into a message to Tori.') + '</p>' +
+          '<p>' + (copied ? 'Paste it into a message to me on Instagram and I will confirm your time.' : 'Copy the text below into a message to me on Instagram.') + '</p>' +
           (copied ? '' : '<p style="white-space:pre-line">' + text.replace(/</g, '&lt;') + '</p>') + igButton);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -262,9 +262,9 @@
       form.reset();
       chosen = [];
       render();
-      show('ok', '<h3>Booking request sent</h3><p>Tori will reply to confirm your appointment time.</p>');
+      show('ok', '<h3>Booking request sent</h3><p>I will reply to confirm your appointment time.</p>');
     }).catch(function () {
-      show('error', '<h3>That did not send</h3><p>Your request was not delivered. Try again, or message Tori on Instagram.</p>' + igButton);
+      show('error', '<h3>That did not send</h3><p>Your request was not delivered. Try again, or message me on Instagram.</p>' + igButton);
     }).then(function () {
       sendBtn.disabled = false;
       sendBtn.textContent = 'Send booking request';

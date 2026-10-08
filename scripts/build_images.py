@@ -21,6 +21,14 @@ JOBS = {
     "g-nail-art": ("nails-halloween-0.jpg", (0.10, 0, 0.90, 1), [640, 400]),
     "g-cat-eye": ("nails-cateye-0.jpg", (0.10, 0, 0.90, 1), [640, 400]),
     "g-bridal": ("bridal-0.jpg", (0.20, 0, 0.833, 1), [540, 400]),
+    # Service page heroes and extra result tiles.
+    "svc-korean": ("lashbrow-combo-0.jpg", (0.02, 0.02, 0.96, 0.98), [1200, 760]),
+    "svc-browlam": ("browlam-b-0.jpg", (0.08, 0, 0.92, 1), [1200, 760]),
+    "svc-nails": ("nails-cateye-1.jpg", (0.08, 0, 0.92, 1), [1200, 760]),
+    "g-brows-2": ("browlam-a-0.jpg", (0.10, 0, 0.90, 1), [640, 400]),
+    "g-brows-3": ("browlam-b-1.jpg", (0.10, 0, 0.90, 1), [640, 400]),
+    "g-brows-4": ("browlam-b-0.jpg", (0.10, 0, 0.90, 1), [640, 400]),
+    "g-nail-art-2": ("nails-halloween-1.jpg", (0.10, 0, 0.90, 1), [640, 400]),
 }
 
 # Stacked before and after posts, split on the white divider (pixel rows measured on the originals).
@@ -29,6 +37,9 @@ PIXEL_JOBS = {
     "ba-lash-after": ("lashlift-0.jpg", (13, 1618, 2566, 3212), [900, 520]),
     "ba-combo-before": ("lashbrow-combo-1.jpg", (10, 0, 2400, 1593), [900, 520]),
     "ba-combo-after": ("lashbrow-combo-1.jpg", (10, 1603, 2400, 3052), [900, 520]),
+    "ba-lash2-before": ("lashlift-1.jpg", (22, 22, 2556, 1600), [900, 520]),
+    "ba-lash2-after": ("lashlift-1.jpg", (22, 1623, 2556, 3202), [900, 520]),
+    "svc-lashlift": ("lashlift-0.jpg", (425, 1618, 1725, 3212), [1200, 760]),
 }
 
 
@@ -79,3 +90,24 @@ logo = Image.open(os.path.join(src_dir, "logo-150.jpg")).convert("RGB")
 logo.save(os.path.join(out_dir, "logo-150.webp"), quality=90, method=6)
 logo.save(os.path.join(out_dir, "logo-150.png"))
 print("logo ok")
+
+# Manifest of every cut (widths and the size of the largest), read by src/build.py.
+import json
+import re
+manifest = {}
+for f in sorted(os.listdir(out_dir)):
+    m = re.match(r"(.+)-(\d+)\.webp$", f)
+    if not m or m.group(1) == "logo":
+        continue
+    name, w = m.group(1), int(m.group(2))
+    entry = manifest.setdefault(name, {"widths": [], "w": 0, "h": 0})
+    entry["widths"].append(w)
+    if w > entry["w"]:
+        with Image.open(os.path.join(out_dir, f)) as im:
+            entry["w"], entry["h"] = im.size
+for entry in manifest.values():
+    entry["widths"].sort()
+manifest_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "images.json")
+with open(manifest_path, "w") as fh:
+    json.dump(manifest, fh, indent=1, sort_keys=True)
+print("manifest:", len(manifest), "images")

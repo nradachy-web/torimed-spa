@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<link rel="canonical" href="{{canonical}}">
+<meta name="theme-color" content="#0a0a0a">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ToriMed Spa">
+<meta property="og:title" content="{{og_title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{canonical}}">
+<meta property="og:image" content="{{og_image}}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/assets/img/logo-150.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/logo-150.png">
+
+<link rel="preload" href="/assets/fonts/tenor-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
+{{preloads}}
+<link rel="stylesheet" href="/assets/styles.css?v={{v}}">
+
+<script type="application/ld+json">
+{{jsonld}}
+</script>
+</head>
+<body{{body_attrs}}>
+<a class="skip" href="#main">Skip to content</a>
+
+{{header}}
+<main id="main">
+
+{{main}}
+</main>
+
+{{footer}}
+{{dock}}
+<script>window.TORI_SERVICES = {{catalog}};</script>
+<script src="/assets/main.js?v={{v}}" defer></script>
+</body>
+</html>

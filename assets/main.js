@@ -1,4 +1,4 @@
-/* ToriMed Spa: menu tabs, the "your visit" picker and the booking request form. */
+/* ToriMed Spa: navigation, menu tabs, the "your visit" picker and the booking request form. */
 (function () {
   'use strict';
 
@@ -8,6 +8,10 @@
     formKey: '',
     instagram: 'torimed.spa'
   };
+
+  // Every service with its price and minutes, written into each page by src/build.py.
+  var CATALOG = window.TORI_SERVICES || {};
+  var VISIT_KEY = 'torimed-visit';
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
@@ -22,7 +26,7 @@
     return h + ' h' + (m ? ' ' + m + ' min' : '');
   }
 
-  /* Header: solid once the page has scrolled, and the phone menu. */
+  /* Header: solid once the page has scrolled, the phone menu and the services list. */
   var header = $('.site-header');
   var onScroll = function () { header.classList.toggle('is-solid', window.scrollY > 24); };
   onScroll();
@@ -30,28 +34,33 @@
 
   var menuBtn = $('.menu-btn');
   var nav = $('#nav');
-  function closeNav() { nav.classList.remove('is-open'); menuBtn.setAttribute('aria-expanded', 'false'); }
+  var group = $('.nav__group');
+  var groupBtn = $('.nav__toggle');
+  function closeGroup() { group.classList.remove('is-open'); groupBtn.setAttribute('aria-expanded', 'false'); }
+  function closeNav() { nav.classList.remove('is-open'); menuBtn.setAttribute('aria-expanded', 'false'); closeGroup(); onScroll(); }
   menuBtn.addEventListener('click', function () {
     var open = nav.classList.toggle('is-open');
     menuBtn.setAttribute('aria-expanded', String(open));
     if (open) header.classList.add('is-solid'); else onScroll();
   });
+  groupBtn.addEventListener('click', function () {
+    var open = group.classList.toggle('is-open');
+    groupBtn.setAttribute('aria-expanded', String(open));
+  });
   nav.addEventListener('click', function (e) { if (e.target.closest('a')) closeNav(); });
+  document.addEventListener('click', function (e) { if (!e.target.closest('.nav__group')) closeGroup(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeNav(); });
 
-  /* Category tabs. Without JavaScript every panel simply stays visible. */
+  /* Category tabs on the home page. Without JavaScript every panel simply stays visible. */
   var tabs = $$('.cat');
-  var panels = $$('.menu__panel');
+  var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
   function selectTab(tab, focus) {
-    tabs.forEach(function (t) {
+    tabs.forEach(function (t, i) {
       var on = t === tab;
       t.setAttribute('aria-selected', String(on));
       t.tabIndex = on ? 0 : -1;
-    });
-    panels.forEach(function (p) {
-      var on = p.id === tab.getAttribute('aria-controls');
-      p.hidden = !on;
-      p.classList.toggle('is-entering', on);
+      panels[i].hidden = !on;
+      panels[i].classList.toggle('is-entering', on);
     });
     if (focus) tab.focus();
   }
@@ -66,33 +75,52 @@
       if (to) { e.preventDefault(); selectTab(to, true); }
     });
   });
-  if (tabs.length) {
-    panels.forEach(function (p, i) { p.hidden = i !== 0; });
-  }
+  panels.forEach(function (p, i) { p.hidden = i !== 0; });
 
-  /* Your visit: services added from the menu. */
-  var services = {};
+  /* Your visit: services added from any price list. The choice follows the visitor from page to page. */
   var chosen = [];
-  $$('.svc').forEach(function (row) {
-    var id = row.dataset.id;
-    var name = $('.svc__name', row).textContent.trim();
-    services[id] = { id: id, name: name, price: Number(row.dataset.price), min: Number(row.dataset.min), row: row };
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'svc__add';
-    btn.setAttribute('aria-pressed', 'false');
-    btn.setAttribute('aria-label', 'Add ' + name + ' to your visit');
-    btn.innerHTML = ICON_PLUS + ICON_CHECK;
-    btn.addEventListener('click', function () { toggle(id); });
-    row.appendChild(btn);
-    services[id].btn = btn;
-  });
+  try {
+    chosen = JSON.parse(sessionStorage.getItem(VISIT_KEY) || '[]').filter(function (id) { return CATALOG[id]; });
+  } catch (e) { chosen = []; }
+  // A service page starts with its own service in the visit, unless the visitor already has one going.
+  var preselect = document.body.getAttribute('data-preselect');
+  if (!chosen.length && preselect && CATALOG[preselect]) chosen = [preselect];
 
+  function save() {
+    try { sessionStorage.setItem(VISIT_KEY, JSON.stringify(chosen)); } catch (e) { /* private mode: the visit just stays on this page */ }
+  }
+  function has(id) { return chosen.indexOf(id) !== -1; }
   function toggle(id) {
     var at = chosen.indexOf(id);
     if (at === -1) chosen.push(id); else chosen.splice(at, 1);
+    save();
     render();
   }
+
+  var rows = [];
+  $$('.svc').forEach(function (row) {
+    var id = row.getAttribute('data-id');
+    var s = CATALOG[id];
+    if (!s) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'svc__add';
+    btn.innerHTML = ICON_PLUS + ICON_CHECK;
+    btn.addEventListener('click', function () { toggle(id); });
+    row.appendChild(btn);
+    rows.push({ id: id, row: row, btn: btn });
+  });
+
+  // Buttons such as "Book a Korean lash lift" put that service in the visit on the way to the form.
+  $$('[data-add]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var id = el.getAttribute('data-add');
+      if (!CATALOG[id]) return;
+      if (!has(id)) chosen.push(id);
+      save();
+      render();
+    });
+  });
 
   var dock = $('#dock');
   var dockSum = $('#dock-sum');
@@ -106,33 +134,33 @@
 
   function totals() {
     return chosen.reduce(function (t, id) {
-      t.price += services[id].price; t.min += services[id].min; return t;
+      t.price += CATALOG[id].price; t.min += CATALOG[id].min; return t;
     }, { price: 0, min: 0 });
   }
 
   function render() {
-    Object.keys(services).forEach(function (id) {
-      var s = services[id], on = chosen.indexOf(id) !== -1;
-      s.btn.setAttribute('aria-pressed', String(on));
-      s.btn.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + s.name + (on ? ' from your visit' : ' to your visit'));
-      s.row.classList.toggle('is-added', on);
+    rows.forEach(function (r) {
+      var on = has(r.id), name = CATALOG[r.id].name;
+      r.btn.setAttribute('aria-pressed', String(on));
+      r.btn.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + name + (on ? ' from your visit' : ' to your visit'));
+      r.row.classList.toggle('is-added', on);
     });
 
     var n = chosen.length, t = totals();
-    var has = n > 0;
-    dock.classList.toggle('has-sum', has);
-    dockSum.hidden = !has;
+    var any = n > 0;
+    dock.classList.toggle('has-sum', any);
+    dockSum.hidden = !any;
     dockCount.textContent = n + (n === 1 ? ' service' : ' services');
     dockDetail.textContent = '$' + t.price + ', about ' + minutesLabel(t.min);
-    dockBtn.textContent = has ? 'Book this visit' : 'Book an appointment';
+    dockBtn.textContent = any ? 'Book this visit' : 'Book an appointment';
 
-    picked.hidden = !has;
-    pickedSum.hidden = !has;
-    generalField.hidden = has;
-    pickLink.textContent = has ? 'Add more from the menu' : 'Pick exact services from the menu';
+    picked.hidden = !any;
+    pickedSum.hidden = !any;
+    generalField.hidden = any;
+    pickLink.textContent = any ? 'Add more from the price list' : 'Pick exact services from the price list';
     picked.innerHTML = '';
     chosen.forEach(function (id) {
-      var s = services[id];
+      var s = CATALOG[id];
       var li = document.createElement('li');
       li.appendChild(document.createTextNode(s.name + ', $' + s.price));
       var rm = document.createElement('button');
@@ -143,9 +171,12 @@
       li.appendChild(rm);
       picked.appendChild(li);
     });
-    pickedSum.innerHTML = has ? '<strong>Total $' + t.price + '</strong>, about ' + minutesLabel(t.min) + '.' : '';
+    pickedSum.innerHTML = any ? '<strong>Total $' + t.price + '</strong>, about ' + minutesLabel(t.min) + '.' : '';
     updateDock();
   }
+
+  // Heading to the form with a visit on screen keeps it, even if the page chose it for them.
+  dockBtn.addEventListener('click', save);
 
   /* The dock shows after the hero and steps aside while the booking form is on screen. */
   var hero = $('.hero');
@@ -187,7 +218,7 @@
     var t = totals();
     var lines = ['Hi Tori, I would like to book an appointment.'];
     if (chosen.length) {
-      lines.push('Services: ' + chosen.map(function (id) { return services[id].name + ' ($' + services[id].price + ')'; }).join(', '));
+      lines.push('Services: ' + chosen.map(function (id) { return CATALOG[id].name + ' ($' + CATALOG[id].price + ')'; }).join(', '));
       lines.push('Total: $' + t.price + ', about ' + minutesLabel(t.min));
     } else if (data.service_type) {
       lines.push('Service: ' + data.service_type);
@@ -214,7 +245,7 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!chosen.length && !form.service_type.value) {
-      form.service_type.setCustomValidity('Choose a service type, or pick services from the menu.');
+      form.service_type.setCustomValidity('Choose a service type, or pick services from the price list.');
     } else {
       form.service_type.setCustomValidity('');
     }
@@ -250,17 +281,19 @@
         name: data.name,
         phone: data.phone,
         email: data.email,
-        services: chosen.length ? chosen.map(function (id) { return services[id].name; }).join(', ') : data.service_type,
+        services: chosen.length ? chosen.map(function (id) { return CATALOG[id].name; }).join(', ') : data.service_type,
         total: chosen.length ? '$' + t.price + ', about ' + minutesLabel(t.min) : '',
         preferred_day: data.preferred_day,
         time_of_day: data.time_of_day,
         notes: data.notes,
+        page: location.pathname,
         message: text
       })
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (!j || !j.success) throw new Error('not sent');
       form.reset();
       chosen = [];
+      save();
       render();
       show('ok', '<h3>Booking request sent</h3><p>I will reply to confirm your appointment time.</p>');
     }).catch(function () {

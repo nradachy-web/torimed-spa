@@ -2,3 +2,4 @@
 _source/
 .DS_Store
 .playwright-mcp/
+__pycache__/

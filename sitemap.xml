@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://torimed.ca/</loc></url>
+  <url><loc>https://torimed.ca/book/</loc></url>
+  <url><loc>https://torimed.ca/services/</loc></url>
+  <url><loc>https://torimed.ca/results/</loc></url>
+  <url><loc>https://torimed.ca/about/</loc></url>
+  <url><loc>https://torimed.ca/questions/</loc></url>
   <url><loc>https://torimed.ca/korean-lash-lift/</loc></url>
   <url><loc>https://torimed.ca/lash-lift-and-tint/</loc></url>
   <url><loc>https://torimed.ca/brow-lamination/</loc></url>

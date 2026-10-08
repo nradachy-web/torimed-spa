@@ -8,7 +8,7 @@ from her listings and her Instagram captions. Do not add a claim here that she h
 SITE = {
     "url": "https://torimed.ca",
     "name": "ToriMed Spa",
-    "asset_version": "8",
+    "asset_version": "9",
 }
 
 IG = "https://www.instagram.com/torimed.spa/"
@@ -97,6 +97,23 @@ COLLECTIVE = {
     "who": "The Beauty Collective",
     "detail": "Welcoming me to the studio, April 2026.",
 }
+
+# The questions on the home page.
+HOME_FAQS = [
+    ("Where are you located?", "I’m inside The Beauty Collective at 191 Main Street, Fredericton, NB E3A 1E1. Parking is free."),
+    ("I have never been waxed before. Is that okay?", "Yes. First-time clients are welcome, and the review above is from a first wax. I keep appointments quick, and you can message me on Instagram with any question before you book."),
+    ("How should I prepare for a wax?", "I made a short video on exactly this. <a href=\"" + WAX_PREP_REEL + "\" target=\"_blank\" rel=\"noopener\">Watch “How to prepare for your waxing appointment” on Instagram.</a>"),
+    ("How long do brow lamination and lash lifts last?", "Brow lamination lasts 4 to 6 weeks. A Korean lash lift lasts 6 to 8 weeks."),
+    ("Do you wax men?", "Yes. My menu includes back, chest and male anatomy Brazilian waxing."),
+    ("Do you do wedding makeup?", "Yes, for brides, bridal parties and events, and I have 2027 dates open. <a href=\"/makeup/\">See wedding and event makeup.</a>"),
+    ("What if I need to cancel?", "Please give at least 24 hours’ notice to cancel or reschedule. Later cancellations may be charged 50% of the appointment price."),
+]
+
+# Questions about booking itself, used on the booking and questions pages.
+BOOKING_FAQS = [
+    ("How does booking work?", "Choose your services from the price list, pick a day and the time of day that suits you, and send your request. I reply to confirm your appointment time."),
+    ("Can I book more than one service?", "Yes. Add each one from the price list and send them as one request. You see the total and the time before you send anything."),
+]
 
 # Appended to the questions on every service page.
 SHARED_FAQS = [
@@ -521,6 +538,7 @@ PAGES = [
             "day_label": "Event date",
             "notes_label": "Where you are getting ready, how many people, and the look you want",
             "opening": "Hi Tori, I would like to ask about makeup for my date.",
+            "sent": "I will reply with my availability and a price.",
         },
         "faqs": [
             ("Do you do makeup for the whole bridal party?", "Yes. I do makeup for brides and their bridal parties."),

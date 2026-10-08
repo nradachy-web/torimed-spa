@@ -2,10 +2,10 @@
 (function () {
   'use strict';
 
-  // Site settings. Booking requests are emailed through Web3Forms once formKey is set.
-  // Until then the form copies the request so the client can paste it into an Instagram message.
+  // Site settings. Booking requests are emailed through Web3Forms with this access key.
+  // If the key is ever removed, the form falls back to copying the request for an Instagram message.
   var SITE = {
-    formKey: '',
+    formKey: '44fecf0f-984e-4514-b0a5-0ec33384a58e',
     instagram: 'torimed.spa'
   };
 
@@ -50,6 +50,27 @@
   nav.addEventListener('click', function (e) { if (e.target.closest('a')) closeNav(); });
   document.addEventListener('click', function (e) { if (!e.target.closest('.nav__group')) closeGroup(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeNav(); });
+
+  /* Clean addresses. Every link is a real page (/book/, /services/ and so on). When the thing a link
+     points at is already on this page, scroll to it instead of leaving, and never put a "#" in the address. */
+  function target(el) {
+    var sel = el.getAttribute('data-scroll');
+    if (!sel) return null;
+    try { return document.querySelector(sel); } catch (e) { return null; }
+  }
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[data-scroll]');
+    if (!link || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    var to = target(link);
+    if (!to) return;
+    e.preventDefault();
+    to.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  // An old link such as /#book still lands on the right spot; tidy the address once it has.
+  window.addEventListener('load', function () {
+    if (!location.hash || !window.history || !history.replaceState) return;
+    setTimeout(function () { history.replaceState(null, '', location.pathname + location.search); }, 0);
+  });
 
   /* Category tabs on the home page. Without JavaScript every panel simply stays visible. */
   var tabs = $$('.cat');
@@ -129,6 +150,7 @@
   var dockBtn = $('#dock-btn');
   // Pages without a price list, such as makeup, ask about a kind of service instead.
   var pageType = document.body.getAttribute('data-service-type');
+  var form = $('#book-form');
   var picked = $('#picked');
   var pickedSum = $('#picked-sum');
   var generalField = $('#general-field');
@@ -156,157 +178,170 @@
     dockDetail.textContent = '$' + t.price + ', about ' + minutesLabel(t.min);
     dockBtn.textContent = any ? 'Book this visit' : 'Book an appointment';
 
-    picked.hidden = !any;
-    pickedSum.hidden = !any;
-    generalField.hidden = any && !pageType;
-    pickLink.textContent = any ? 'Add more from the price list' : 'Pick exact services from the price list';
-    picked.innerHTML = '';
-    chosen.forEach(function (id) {
-      var s = CATALOG[id];
-      var li = document.createElement('li');
-      li.appendChild(document.createTextNode(s.name + ', $' + s.price));
-      var rm = document.createElement('button');
-      rm.type = 'button';
-      rm.setAttribute('aria-label', 'Remove ' + s.name);
-      rm.innerHTML = ICON_X;
-      rm.addEventListener('click', function () { toggle(id); });
-      li.appendChild(rm);
-      picked.appendChild(li);
-    });
-    pickedSum.innerHTML = any ? '<strong>Total $' + t.price + '</strong>, about ' + minutesLabel(t.min) + '.' : '';
+    if (form) {
+      picked.hidden = !any;
+      pickedSum.hidden = !any;
+      generalField.hidden = any && !pageType;
+      pickLink.textContent = any ? 'Add more from the price list' : 'Pick exact services from the price list';
+      picked.innerHTML = '';
+      chosen.forEach(function (id) {
+        var s = CATALOG[id];
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode(s.name + ', $' + s.price));
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.setAttribute('aria-label', 'Remove ' + s.name);
+        rm.innerHTML = ICON_X;
+        rm.addEventListener('click', function () { toggle(id); });
+        li.appendChild(rm);
+        picked.appendChild(li);
+      });
+      pickedSum.innerHTML = any ? '<strong>Total $' + t.price + '</strong>, about ' + minutesLabel(t.min) + '.' : '';
+    }
     updateDock();
   }
 
   // Heading to the form with a visit on screen keeps it, even if the page chose it for them.
   dockBtn.addEventListener('click', save);
 
-  /* The dock shows after the hero and steps aside while the booking form is on screen. */
-  var hero = $('.hero');
+  /* The dock shows after the top of the page and steps aside while the booking form is on screen. */
+  var top = $('.hero') || $('.pagehead');
   var book = $('#book');
-  var pastHero = false, atBook = false;
+  var pastTop = false, atBook = false;
   function updateDock() {
-    var show = pastHero && !atBook;
+    var show = pastTop && !atBook;
     dock.hidden = false;
     dock.classList.toggle('is-in', show);
     dock.setAttribute('aria-hidden', String(!show));
     $$('a', dock).forEach(function (a) { a.tabIndex = show ? 0 : -1; });
   }
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (entries) {
-      pastHero = !entries[0].isIntersecting; updateDock();
-    }, { threshold: 0.25 }).observe(hero);
-    new IntersectionObserver(function (entries) {
-      atBook = entries[0].isIntersecting; updateDock();
-    }, { threshold: 0.08 }).observe(book);
+    if (top) {
+      new IntersectionObserver(function (entries) {
+        pastTop = !entries[0].isIntersecting; updateDock();
+      }, { threshold: 0.25 }).observe(top);
+    }
+    if (book) {
+      new IntersectionObserver(function (entries) {
+        atBook = entries[0].isIntersecting; updateDock();
+      }, { threshold: 0.08 }).observe(book);
+    }
   }
 
   /* Booking request form. */
-  var form = $('#book-form');
-  var status = $('#form-status');
-  var sendBtn = $('#send-btn');
-  var sendNote = $('#send-note');
-  var day = $('#f-day');
+  if (form) initForm();
 
-  var now = new Date();
-  var iso = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
-  day.min = iso(now);
+  function initForm() {
+    var status = $('#form-status');
+    var sendBtn = $('#send-btn');
+    var sendNote = $('#send-note');
+    var day = $('#f-day');
 
-  if (pageType) form.service_type.value = pageType;
+    var now = new Date();
+    var iso = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+    day.min = iso(now);
 
-  if (!SITE.formKey) {
-    sendBtn.textContent = 'Copy request for Instagram';
-    sendNote.textContent = 'This copies your request so you can paste it into a message to me on Instagram.';
-  }
-
-  function requestText(data) {
-    var t = totals();
-    var lines = [form.getAttribute('data-opening') || 'Hi Tori, I would like to book an appointment.'];
-    if (chosen.length) {
-      lines.push('Services: ' + chosen.map(function (id) { return CATALOG[id].name + ' ($' + CATALOG[id].price + ')'; }).join(', '));
-      lines.push('Total: $' + t.price + ', about ' + minutesLabel(t.min));
-    }
-    if (data.service_type && !generalField.hidden) lines.push((chosen.length ? 'Also asking about: ' : 'Service: ') + data.service_type);
-    var when = new Date(data.preferred_day + 'T12:00:00');
-    lines.push((form.getAttribute('data-day-label') || 'Preferred day') + ': ' + when.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' }) + ', ' + String(data.time_of_day).toLowerCase());
-    lines.push('Name: ' + data.name);
-    lines.push('Mobile: ' + data.phone);
-    if (data.email) lines.push('Email: ' + data.email);
-    if (data.notes) lines.push('Notes: ' + data.notes);
-    return lines.join('\n');
-  }
-
-  function show(kind, html) {
-    status.className = 'form__status' + (kind === 'error' ? ' is-error' : '');
-    status.innerHTML = html;
-    status.hidden = false;
-    status.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }
-
-  var igUrl = 'https://ig.me/m/' + SITE.instagram;
-  var igButton = '<a class="btn btn--coal" href="' + igUrl + '" target="_blank" rel="noopener">Open Instagram</a>';
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!chosen.length && !form.service_type.value) {
-      form.service_type.setCustomValidity('Choose a service type, or pick services from the price list.');
-    } else {
-      form.service_type.setCustomValidity('');
-    }
-    if (!form.reportValidity()) return;
-
-    var data = {};
-    new FormData(form).forEach(function (v, k) { data[k] = String(v).trim(); });
-    if (data.botcheck) return;
-    var text = requestText(data);
+    if (pageType) form.service_type.value = pageType;
 
     if (!SITE.formKey) {
-      var done = function (copied) {
-        show('ok', '<h3>' + (copied ? 'Request copied' : 'Your request') + '</h3>' +
-          '<p>' + (copied ? 'Paste it into a message to me on Instagram and I will confirm your time.' : 'Copy the text below into a message to me on Instagram.') + '</p>' +
-          (copied ? '' : '<p style="white-space:pre-line">' + text.replace(/</g, '&lt;') + '</p>') + igButton);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
-      } else { done(false); }
-      return;
+      sendBtn.textContent = 'Copy request for Instagram';
+      sendNote.textContent = 'This copies your request so you can paste it into a message to me on Instagram.';
     }
 
-    sendBtn.disabled = true;
-    sendBtn.textContent = 'Sending';
-    var t = totals();
-    fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        access_key: SITE.formKey,
-        subject: 'Booking request from ' + data.name,
-        from_name: 'ToriMed Spa website',
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        services: chosen.map(function (id) { return CATALOG[id].name; }).concat(data.service_type && !generalField.hidden ? [data.service_type] : []).join(', '),
-        total: chosen.length ? '$' + t.price + ', about ' + minutesLabel(t.min) : '',
-        preferred_day: data.preferred_day,
-        time_of_day: data.time_of_day,
-        notes: data.notes,
-        page: location.pathname,
-        message: text
-      })
-    }).then(function (r) { return r.json(); }).then(function (j) {
-      if (!j || !j.success) throw new Error('not sent');
-      form.reset();
-      chosen = [];
-      save();
-      render();
-      show('ok', '<h3>Booking request sent</h3><p>I will reply to confirm your appointment time.</p>');
-    }).catch(function () {
-      show('error', '<h3>That did not send</h3><p>Your request was not delivered. Try again, or message me on Instagram.</p>' + igButton);
-    }).then(function () {
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'Send booking request';
+    function requestText(data) {
+      var t = totals();
+      var lines = [form.getAttribute('data-opening') || 'Hi Tori, I would like to book an appointment.'];
+      if (chosen.length) {
+        lines.push('Services: ' + chosen.map(function (id) { return CATALOG[id].name + ' ($' + CATALOG[id].price + ')'; }).join(', '));
+        lines.push('Total: $' + t.price + ', about ' + minutesLabel(t.min));
+      }
+      if (data.service_type && !generalField.hidden) lines.push((chosen.length ? 'Also asking about: ' : 'Service: ') + data.service_type);
+      var when = new Date(data.preferred_day + 'T12:00:00');
+      lines.push((form.getAttribute('data-day-label') || 'Preferred day') + ': ' + when.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) + ', ' + String(data.time_of_day).toLowerCase());
+      lines.push('Name: ' + data.name);
+      lines.push('Mobile: ' + data.phone);
+      if (data.email) lines.push('Email: ' + data.email);
+      if (data.notes) lines.push('Notes: ' + data.notes);
+      return lines.join('\n');
+    }
+
+    function show(kind, html) {
+      status.className = 'form__status' + (kind === 'error' ? ' is-error' : '');
+      status.innerHTML = html;
+      status.hidden = false;
+      status.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    var igUrl = 'https://ig.me/m/' + SITE.instagram;
+    var igButton = '<a class="btn btn--coal" href="' + igUrl + '" target="_blank" rel="noopener">Open Instagram</a>';
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!chosen.length && !form.service_type.value) {
+        form.service_type.setCustomValidity('Choose a service type, or pick services from the price list.');
+      } else {
+        form.service_type.setCustomValidity('');
+      }
+      if (!form.reportValidity()) return;
+
+      var data = {};
+      new FormData(form).forEach(function (v, k) { data[k] = String(v).trim(); });
+      if (data.botcheck) return;
+      var text = requestText(data);
+
+      if (!SITE.formKey) {
+        var done = function (copied) {
+          show('ok', '<h3>' + (copied ? 'Request copied' : 'Your request') + '</h3>' +
+            '<p>' + (copied ? 'Paste it into a message to me on Instagram and I will confirm your time.' : 'Copy the text below into a message to me on Instagram.') + '</p>' +
+            (copied ? '' : '<p style="white-space:pre-line">' + text.replace(/</g, '&lt;') + '</p>') + igButton);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+        } else { done(false); }
+        return;
+      }
+
+      var label = sendBtn.textContent;
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending';
+      var t = totals();
+      var services = chosen.map(function (id) { return CATALOG[id].name; });
+      if (data.service_type && !generalField.hidden) services.push(data.service_type);
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: SITE.formKey,
+          subject: 'Booking request from ' + data.name,
+          from_name: 'ToriMed Spa website',
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          services: services.join(', '),
+          total: chosen.length ? '$' + t.price + ', about ' + minutesLabel(t.min) : '',
+          day: data.preferred_day,
+          time_of_day: data.time_of_day,
+          notes: data.notes,
+          page: location.pathname,
+          message: text
+        })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (!j || !j.success) throw new Error('not sent');
+        form.reset();
+        if (pageType) form.service_type.value = pageType;
+        chosen = [];
+        save();
+        render();
+        show('ok', '<h3>Request sent</h3><p>' + (form.getAttribute('data-sent') || 'I will reply to confirm your appointment time.') + '</p>');
+      }).catch(function () {
+        show('error', '<h3>That did not send</h3><p>Your request was not delivered. Try again, or message me on Instagram.</p>' + igButton);
+      }).then(function () {
+        sendBtn.disabled = false;
+        sendBtn.textContent = label;
+      });
     });
-  });
-  form.service_type.addEventListener('change', function () { form.service_type.setCustomValidity(''); });
+    form.service_type.addEventListener('change', function () { form.service_type.setCustomValidity(''); });
+  }
 
   render();
 })();

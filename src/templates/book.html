@@ -1,11 +1,11 @@
 <!-- Book -->
-<section class="band band--coal book" id="book">
+<section class="band band--coal book{{book_class}}" id="book">
   <div class="wrap book__in">
     <div class="book__main">
-      <h2>{{book_heading}}</h2>
+      <{{book_tag}}>{{book_heading}}</{{book_tag}}>
       <p class="book__lede">{{book_lede}}</p>
 
-      <form class="form" id="book-form" action="#book" method="post" data-day-label="{{day_label}}" data-opening="{{opening}}">
+      <form class="form" id="book-form" action="/book/" method="post" data-day-label="{{day_label}}" data-opening="{{opening}}" data-sent="{{sent}}">
         <fieldset class="form__block">
           <legend>What are you booking?</legend>
           <ul class="picked" id="picked" hidden></ul>
@@ -23,7 +23,7 @@
               <option>Not sure yet</option>
             </select>
           </div>
-          <a class="form__link" href="{{menu_anchor}}" id="pick-link">Pick exact services from the menu</a>
+          <a class="form__link" href="/services/" data-scroll="{{menu_anchor}}" id="pick-link">Pick exact services from the menu</a>
         </fieldset>
 
         <fieldset class="form__block">

@@ -537,6 +537,34 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
   .pairs--single .pair__shots { grid-template-columns: 1fr 1fr; gap: 10px; }
 }
 
+/* Pages other than the home page: a plain dark heading band under the header */
+.pagehead { background: var(--black); color: var(--on-dark); padding: calc(var(--header-h) + clamp(40px, 7vw, 88px)) 0 clamp(40px, 6vw, 76px); }
+.pagehead h1, .book--page h1 { font-size: clamp(1.75rem, 1rem + 3.4vw, 3.25rem); line-height: 1.2; }
+.pagehead p { margin-top: 16px; max-width: 36em; font-size: 1.125rem; color: var(--on-dark-2); }
+.book--page { padding-top: calc(var(--header-h) + clamp(40px, 7vw, 88px)); }
+.nav a[aria-current="page"] { color: var(--on-dark); }
+.band--coal + .band--coal { border-top: 1px solid var(--line-dark); }
+.menu--all { margin-top: 0; }
+.menu__intro--plain { border-bottom: 0; padding-bottom: 0; }
+.results__links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(28px, 4vw, 44px); }
+.cards { display: grid; gap: 16px; }
+.card address { color: var(--ink-2); }
+.faqgroups { display: grid; gap: clamp(44px, 6vw, 72px); }
+.faqgroup { max-width: 54rem; }
+.faqgroup h2 { font-size: clamp(1.125rem, 1rem + 0.6vw, 1.4375rem); }
+.faqgroup .faq { margin-top: 18px; }
+.faqgroup__more { margin-top: 18px; }
+.faqgroup__more a { color: var(--rose); text-underline-offset: 4px; }
+.cta { background: var(--blush); color: var(--ink); padding-block: clamp(56px, 8vw, 104px); }
+.cta__in { display: grid; gap: 16px; justify-items: start; }
+.cta p { max-width: 32em; font-size: 1.125rem; }
+.cta__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.btn--line { border-color: rgba(18, 18, 18, 0.45); color: var(--ink); }
+.btn--line:hover { background: var(--black); border-color: var(--black); color: var(--white); }
+@media (min-width: 760px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+}
+
 /* Fixed booking dock */
 .dock {
   position: fixed; z-index: 40; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));

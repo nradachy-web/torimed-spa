@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
-from content import CATALOG, CATEGORIES, IG_DM, PAGES, SHARED_FAQS, SITE  # noqa: E402
+from content import BOOKING_FAQS, CATALOG, CATEGORIES, HOME_FAQS, IG_DM, PAGES, SHARED_FAQS, SITE  # noqa: E402
 
 IMAGES = json.load(open(os.path.join(HERE, "images.json")))
 V = SITE["asset_version"]
@@ -84,9 +84,12 @@ def pills(links):
     return f'\n          <p class="menu__links"><span class="menu__links-label">Read more</span>{items}</p>'
 
 
-def header():
+def header(current=""):
     services = "\n".join(f'          <a href="/{p["slug"]}/">{p["nav"]}</a>' for p in PAGES)
-    return fill(tpl("header.html"), services=services)
+    html = fill(tpl("header.html"), services=services)
+    if current:
+        html = html.replace(f'href="{current}"', f'href="{current}" aria-current="page"')
+    return html
 
 
 def footer():
@@ -124,7 +127,11 @@ BOOK_DEFAULTS = {
     "day_label": "Preferred day",
     "notes_label": "Anything I should know?",
     "opening": "Hi Tori, I would like to book an appointment.",
+    "sent": "I will reply to confirm your appointment time.",
+    "book_tag": "h2",
+    "book_class": "",
 }
+BOOK_LINK = 'href="/book/" data-scroll="#book"'
 STEPS = [
     ("Choose your services", "Add them from the price list. You see the time and the total before you send anything."),
     ("Tell me when you are free", "Pick a day and the time of day that suits you."),
@@ -154,7 +161,7 @@ def page(meta, main, preloads, jsonld, body_attrs=""):
         preloads=preloads,
         jsonld=json.dumps(jsonld, ensure_ascii=False, indent=2),
         body_attrs=body_attrs,
-        header=header(),
+        header=header(meta.get("path", "")),
         main=main,
         footer=footer(),
         dock=tpl("dock.html"),
@@ -219,7 +226,7 @@ def build_home():
         tpl("home_results.html"),
         tpl("home_about.html"),
         tpl("home_review.html"),
-        tpl("home_how.html"),
+        fill(tpl("home_how.html"), faqs=faq_block(HOME_FAQS)),
         book_form("#services"),
     ])
     preloads = (
@@ -245,16 +252,16 @@ def service_hero(p):
     add = f' data-add="{p["primary"]}"' if p["primary"] else ""
     second_label = p.get("second_cta") or ("See results" if p["results"] else "See prices")
     second_href = "#results" if p["results"] else "#prices"
-    second = f'<a class="btn btn--ghost" href="{second_href}">{second_label}</a>'
+    second = f'<a class="btn btn--ghost" href="{second_href}" data-scroll="{second_href}">{second_label}</a>'
     return (
         f'<section class="hero hero--service" style="--focus: {hero["focus"]}">\n  <div class="hero__photo">\n'
         + picture(hero["img"], "(min-width: 900px) 56vw, 100vw", hero["alt"], lazy=False, indent="    ")
         + '\n  </div>\n  <div class="wrap hero__in">\n    <div class="hero__copy">\n'
-        '      <a class="crumb" href="/#services">All services</a>\n'
+        '      <a class="crumb" href="/services/">All services</a>\n'
         f'      <h1 class="hero__title">{p["h1"]}</h1>\n'
         f'      <p class="hero__lede">{p["lede"]}</p>\n'
         f'      <dl class="facts">\n{facts}\n      </dl>\n'
-        f'      <div class="hero__actions">\n        <a class="btn btn--blush" href="#book"{add}>{p["cta"]}</a>\n        {second}\n      </div>\n'
+        f'      <div class="hero__actions">\n        <a class="btn btn--blush" {BOOK_LINK}{add}>{p["cta"]}</a>\n        {second}\n      </div>\n'
         "    </div>\n  </div>\n</section>\n"
     ), info
 
@@ -278,9 +285,10 @@ def service_about(p):
 
 
 def service_results(p):
-    r = p["results"]
-    if not r:
-        return ""
+    return results_block(p["results"]) if p["results"] else ""
+
+
+def results_block(r, sid="results"):
     pairs = []
     for pr in r["pairs"]:
         pairs.append(
@@ -311,8 +319,11 @@ def service_results(p):
     if r.get("more"):
         label, href = r["more"]
         more = f'    <p class="results__more"><a href="{href}" target="_blank" rel="noopener">{label}</a></p>\n'
+    if r.get("links"):
+        items = "".join(f'<a class="btn btn--ghost btn--sm" href="{href}">{label}</a>' for label, href in r["links"])
+        more += f'    <p class="results__links">{items}</p>\n'
     return (
-        '<section class="band band--coal" id="results">\n  <div class="wrap">\n    <div class="band__head">\n'
+        f'<section class="band band--coal" id="{sid}">\n  <div class="wrap">\n    <div class="band__head">\n'
         f'      <h2>{r["heading"]}</h2>\n      <p>{r["intro"]}</p>\n    </div>\n{pairs_html}{tiles_html}{more}  </div>\n</section>\n'
     )
 
@@ -330,15 +341,18 @@ def service_prices(p):
     )
 
 
+def steps_and_questions(faqs, steps=STEPS, heading="How booking works", cta="Book an appointment", link=BOOK_LINK):
+    items = "\n".join(
+        f"        <li>\n          <h3>{title}</h3>\n          <p>{text}</p>\n        </li>" for title, text in steps
+    )
+    return fill(tpl("service_how.html"), faqs=faq_block(faqs), steps=items, steps_heading=heading, steps_cta=cta, steps_link=link)
+
+
 def service_questions(p):
     shared = [f for f in SHARED_FAQS if f[0] not in p.get("skip_shared", [])]
     faqs = p["faqs"] + shared
-    steps = "\n".join(
-        f"        <li>\n          <h3>{title}</h3>\n          <p>{text}</p>\n        </li>" for title, text in p.get("steps", STEPS)
-    )
-    html = fill(
-        tpl("service_how.html"), faqs=faq_block(faqs), steps=steps,
-        steps_heading=p.get("steps_heading", "How booking works"), steps_cta=p.get("steps_cta", "Book an appointment"),
+    html = steps_and_questions(
+        faqs, p.get("steps", STEPS), p.get("steps_heading", "How booking works"), p.get("steps_cta", "Book an appointment"),
     )
     return html, faqs
 
@@ -384,7 +398,7 @@ def build_service(p):
         quote_band(p["quote"]),
         service_prices(p),
         questions_html,
-        book_form("#prices" if p["prices"] else "/#services", p.get("book")),
+        book_form("#prices" if p["prices"] else "", p.get("book")),
     ]))
     name = p["hero"]["img"]
     srcset = ", ".join(f"/assets/img/{name}-{w}.avif {w}w" for w in info["widths"])
@@ -394,6 +408,7 @@ def build_service(p):
         "description": p["description"],
         "canonical": f'{URL}/{p["slug"]}/',
         "og_image": f'{URL}/assets/img/og-{p["slug"]}.jpg',
+        "path": f'/{p["slug"]}/',
     }
     attrs = f' data-preselect="{p["primary"]}"' if p["primary"] else ""
     if p.get("service_type"):
@@ -401,10 +416,176 @@ def build_service(p):
     return page(meta, main, preloads, service_jsonld(p, faqs), attrs)
 
 
+# ---------------------------------------------------------------- book, services, results, about, questions
+
+MAPS = "https://www.google.com/maps/search/?api=1&amp;query=The+Beauty+Collective%2C+191+Main+Street%2C+Fredericton%2C+NB+E3A+1E1"
+BY_SLUG = {p["slug"]: p for p in PAGES}
+
+
+def pagehead(h1, lede):
+    return f'<section class="pagehead">\n  <div class="wrap">\n    <h1>{h1}</h1>\n    <p>{lede}</p>\n  </div>\n</section>\n'
+
+
+def cta_band():
+    return (
+        '<section class="cta" aria-labelledby="cta-title">\n  <div class="wrap cta__in">\n'
+        '    <h2 id="cta-title">Ready to book?</h2>\n'
+        "    <p>Pick your services, tell me when you are free, and I will confirm your time.</p>\n"
+        '    <div class="cta__actions">\n      <a class="btn btn--coal" href="/book/">Book an appointment</a>\n'
+        '      <a class="btn btn--line" href="/services/">See services and prices</a>\n    </div>\n  </div>\n</section>\n'
+    )
+
+
+def simple_meta(path, title, description):
+    return {"title": title, "description": description, "canonical": URL + path, "og_image": URL + "/assets/img/og.jpg", "path": path}
+
+
+def simple_jsonld(name, path, faqs=None):
+    graph = [
+        {"@type": "WebPage", "@id": URL + path, "name": name, "url": URL + path, "about": {"@id": URL + "/#business"}},
+        {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "ToriMed Spa", "item": URL + "/"},
+                {"@type": "ListItem", "position": 2, "name": name, "item": URL + path},
+            ],
+        },
+    ]
+    if faqs:
+        graph.append({
+            "@type": "FAQPage",
+            "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": strip_tags(a)}} for q, a in faqs],
+        })
+    return {"@context": "https://schema.org", "@graph": graph}
+
+
+def build_book():
+    faqs = BOOKING_FAQS + SHARED_FAQS
+    main = "\n".join([
+        book_form("", {"book_tag": "h1", "book_class": " book--page"}),
+        steps_and_questions(faqs, cta="See services and prices", link='href="/services/"'),
+    ])
+    meta = simple_meta(
+        "/book/", "Book an appointment | ToriMed Spa",
+        "Send a booking request to Tori Kruse at ToriMed Spa in Fredericton. Choose your services, pick a day, and get your appointment time confirmed.",
+    )
+    return page(meta, main, "", simple_jsonld("Book an appointment", "/book/", faqs))
+
+
+def build_services():
+    panels = []
+    for c in CATEGORIES:
+        panels.append(
+            f'      <div class="menu__panel" id="{c["id"]}">\n'
+            f'        <div class="menu__intro">\n          <h2>{c["name"]}</h2>\n          <p>{c["intro"]}</p>{pills(c["links"])}\n        </div>\n'
+            f'        <div class="menu__cols">\n{price_groups(c["groups"])}\n        </div>\n      </div>'
+        )
+    makeup = BY_SLUG["makeup"]
+    panels.append(
+        '      <div class="menu__panel" id="makeup">\n        <div class="menu__intro menu__intro--plain">\n'
+        f'          <h2>{makeup["h1"]}</h2>\n          <p>{makeup["lede"]} Priced by quote.</p>'
+        + pills([(makeup["nav"], "/makeup/")]) + "\n        </div>\n      </div>"
+    )
+    main = "\n".join([
+        pagehead("Services and prices", "Every service and every price. Add what you want, then send it to me as one booking request."),
+        '<section class="band band--petal" id="services">\n  <div class="wrap">\n    <div class="menu menu--all">\n'
+        + "\n\n".join(panels)
+        + '\n    </div>\n    <p class="menu__foot">Prices are in Canadian dollars. Times show how long to set aside. I confirm the final price with your appointment.</p>\n  </div>\n</section>\n',
+        book_form("#services"),
+    ])
+    meta = simple_meta(
+        "/services/", "Services and prices | ToriMed Spa, Fredericton",
+        "Every service and price at ToriMed Spa in Fredericton: waxing from $15, brow lamination $95, lash lifts from $100, facials, microchanneling, manicures and pedicures.",
+    )
+    return page(meta, main, "", simple_jsonld("Services and prices", "/services/"))
+
+
+def build_results():
+    lash, korean, brows, nails, makeup = (
+        BY_SLUG[k]["results"] for k in ("lash-lift-and-tint", "korean-lash-lift", "brow-lamination", "manicures-and-pedicures", "makeup")
+    )
+    groups = [
+        ("lashes", {
+            "heading": "Lash lifts", "intro": "My clients’ own lashes, before and after. No extensions.",
+            "pairs": [lash["pairs"][0], korean["pairs"][0]], "tiles": [],
+            "links": [("About the lash lift and tint", "/lash-lift-and-tint/"), ("About the Korean lash lift", "/korean-lash-lift/")],
+        }),
+        ("brows", {
+            "heading": "Brow lamination", "intro": "Lamination, tint and wax in one visit.",
+            "pairs": [], "tiles": brows["tiles"], "links": [("About brow lamination", "/brow-lamination/")],
+        }),
+        ("nails", {
+            "heading": "Nails", "intro": "Gel overlay and hand-painted nail art.",
+            "pairs": [], "tiles": nails["tiles"], "links": [("About manicures and pedicures", "/manicures-and-pedicures/")],
+        }),
+        ("makeup", {
+            "heading": "Wedding makeup", "intro": makeup["intro"],
+            "pairs": [], "wide": True, "tiles": makeup["tiles"][:2], "links": [("About wedding and event makeup", "/makeup/")],
+        }),
+    ]
+    main = "\n".join(
+        [pagehead("My work", "Every photo here is one of my own clients, from my Instagram.")]
+        + [results_block(r, sid) for sid, r in groups]
+        + [cta_band()]
+    )
+    meta = simple_meta(
+        "/results/", "Results: lash lifts, brows, nails and makeup | ToriMed Spa",
+        "Real before and after photos from ToriMed Spa in Fredericton: lash lifts, Korean lash lifts, brow lamination, gel nails and wedding makeup by Tori Kruse.",
+    )
+    return page(meta, main, "", simple_jsonld("My work", "/results/"))
+
+
+def build_about():
+    find_me = (
+        '<section class="band band--petal" id="find-me">\n  <div class="wrap">\n    <div class="band__head">\n      <h2>Where to find me</h2>\n    </div>\n'
+        '    <div class="cards">\n      <div class="card">\n        <h3 class="card__title">ToriMed Spa</h3>\n'
+        "        <address>Inside The Beauty Collective<br>191 Main Street<br>Fredericton, NB E3A 1E1</address>\n        <p>Free parking.</p>\n"
+        f'        <a class="btn btn--coal btn--block" href="{MAPS}" target="_blank" rel="noopener">Get directions</a>\n      </div>\n'
+        '      <div class="card">\n        <h3 class="card__title">Rather message?</h3>\n        <p>Ask me anything before you book.</p>\n'
+        f'        <a class="btn btn--coal btn--block" href="{IG_DM}" target="_blank" rel="noopener">Message @torimed.spa</a>\n      </div>\n    </div>\n  </div>\n</section>\n'
+    )
+    main = "\n".join([
+        pagehead("About me", "Medical aesthetician in Fredericton. Waxing is my specialty."),
+        tpl("home_about.html"),
+        tpl("home_review.html"),
+        find_me,
+        cta_band(),
+    ])
+    meta = simple_meta(
+        "/about/", "About Tori Kruse, medical aesthetician | ToriMed Spa",
+        "Tori Kruse has been an aesthetician since 2021 and specializes in waxing. Meet her, see her treatment room at The Beauty Collective in Fredericton, and read what clients say.",
+    )
+    return page(meta, main, "", simple_jsonld("About me", "/about/"))
+
+
+def build_questions():
+    wax, braz = BY_SLUG["waxing"]["faqs"], BY_SLUG["brazilian-wax"]["faqs"]
+    waxing = [(q, a.replace(", and the review on this page is from a first wax", "")) for q, a in wax] + [braz[2]]
+    groups = [("Booking and visiting", BOOKING_FAQS + SHARED_FAQS, None, None), ("Waxing", waxing, "/waxing/", "waxing")]
+    for slug in ("korean-lash-lift", "lash-lift-and-tint", "brow-lamination", "facials", "microchanneling", "manicures-and-pedicures", "makeup"):
+        nav = BY_SLUG[slug]["nav"]
+        groups.append((nav, BY_SLUG[slug]["faqs"], f"/{slug}/", nav if nav.startswith("Korean") else nav[0].lower() + nav[1:]))
+    blocks, every = [], []
+    for name, faqs, href, label in groups:
+        more = f'\n      <p class="faqgroup__more"><a href="{href}">More about {label}</a></p>' if href else ""
+        blocks.append(f'    <div class="faqgroup">\n      <h2>{name}</h2>\n      <div class="faq">\n{faq_block(faqs)}\n      </div>{more}\n    </div>')
+        every += faqs
+    main = "\n".join([
+        pagehead("Questions", "Booking, waxing, lashes, brows, skin, nails and makeup. If yours is not here, message me on Instagram."),
+        '<section class="band band--white" id="questions">\n  <div class="wrap faqgroups">\n' + "\n".join(blocks) + "\n  </div>\n</section>\n",
+        cta_band(),
+    ])
+    meta = simple_meta(
+        "/questions/", "Questions and answers | ToriMed Spa, Fredericton",
+        "Answers about booking, waxing, lash lifts, brow lamination, facials, microchanneling, nails and wedding makeup at ToriMed Spa in Fredericton.",
+    )
+    return page(meta, main, "", simple_jsonld("Questions", "/questions/", every))
+
+
 def write(path, text):
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
-    for bad in ("—", "–"):
+    for bad in (chr(0x2014), chr(0x2013)):
         if bad in text:
             raise SystemExit(f"{path}: contains a dash character that the house style forbids")
     with open(full, "w", encoding="utf-8") as fh:
@@ -415,6 +596,9 @@ def write(path, text):
 def main():
     write("index.html", build_home())
     urls = [URL + "/"]
+    for slug, build in (("book", build_book), ("services", build_services), ("results", build_results), ("about", build_about), ("questions", build_questions)):
+        write(f"{slug}/index.html", build())
+        urls.append(f"{URL}/{slug}/")
     for p in PAGES:
         write(f'{p["slug"]}/index.html', build_service(p))
         urls.append(f'{URL}/{p["slug"]}/')

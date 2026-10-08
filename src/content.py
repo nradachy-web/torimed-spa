@@ -8,7 +8,7 @@ from her listings and her Instagram captions. Do not add a claim here that she h
 SITE = {
     "url": "https://torimed.ca",
     "name": "ToriMed Spa",
-    "asset_version": "7",
+    "asset_version": "8",
 }
 
 IG = "https://www.instagram.com/torimed.spa/"
@@ -463,6 +463,70 @@ PAGES = [
             ("How much is gel overlay or nail art?", "Mention it in your booking request and I will confirm the price."),
             ("Can I book a manicure and a pedicure together?", "Yes. Add both and send them as one request."),
             ("Do you remove gel polish?", "Yes. Gel polish removal is $20."),
+        ],
+    },
+    {
+        "slug": "makeup",
+        "nav": "Wedding and event makeup",
+        "title": "Bridal and event makeup in Fredericton | ToriMed Spa",
+        "description": "Professional makeup for brides, bridal parties and events with Tori Kruse in Fredericton. 2027 wedding dates open. Send your date for availability and a price.",
+        "h1": "Wedding and event makeup",
+        "lede": "Professional makeup for brides, bridal parties and events. I still have 2027 wedding dates open.",
+        "primary": None,
+        "service_type": "Wedding makeup",
+        "cta": "Ask about your date",
+        "second_cta": "See my work",
+        "facts": [("Weddings", "2027 dates open"), ("Bridal parties", "Welcome"), ("Pricing", "By quote")],
+        "hero": {"img": "svc-makeup", "alt": "Tori applying a bride’s makeup, seen through a ring light", "focus": "62% 40%"},
+        "about": {
+            "heading": "Makeup for your big day",
+            "paras": [
+                "It is always such an honour, and so much fun, to be part of your big day. I do makeup for brides and their bridal parties, and for other events too.",
+                "Every wedding and event is different, so I price each one individually. Send me your date and a few details, and I will reply with my availability and a price.",
+            ],
+            "aside": {"type": "checks", "heading": "To get a price, tell me", "items": [
+                "Your date",
+                "Where you are getting ready",
+                "How many people need makeup",
+                "The look you have in mind",
+            ]},
+        },
+        "results": {
+            "heading": "Recent work",
+            "intro": "A wedding from October 2026. I did the makeup for this bride and her bridal party, working alongside another artist.",
+            "pairs": [],
+            "wide": True,
+            "tiles": [
+                ("g-wed-bride", "The bride outdoors in her veil, smiling, with her makeup finished", "The bride"),
+                ("g-wed-robes", "The bride and her bridal party in robes with their makeup done", "Her bridal party, ready"),
+                ("g-wed-work", "Tori applying the bride’s makeup beside a ring light", "Makeup in progress"),
+                ("g-wed-party", "The bride and five bridesmaids outdoors, holding her bouquet together", "The whole party"),
+            ],
+            "more": ("More of my work on Instagram @torimed.spa", IG),
+        },
+        "quote": COLLECTIVE,
+        "prices": None,
+        "steps_heading": "How it works",
+        "steps": [
+            ("Send me your date", "Tell me when it is and where you are getting ready."),
+            ("Tell me about your group", "How many people need makeup, and the look you have in mind."),
+            ("Get my reply", "I reply with my availability and a price."),
+        ],
+        "steps_cta": "Ask about your date",
+        "skip_shared": ["Where are you located?", "What if I need to cancel?"],
+        "book": {
+            "book_heading": "Ask about your date",
+            "book_lede": "Send your date and a few details, and I will reply with my availability and a price.",
+            "when_legend": "When is it?",
+            "day_label": "Event date",
+            "notes_label": "Where you are getting ready, how many people, and the look you want",
+            "opening": "Hi Tori, I would like to ask about makeup for my date.",
+        },
+        "faqs": [
+            ("Do you do makeup for the whole bridal party?", "Yes. I do makeup for brides and their bridal parties."),
+            ("Do you have dates open?", "I still have openings for 2027. Send me your date and I will let you know."),
+            ("Do you do makeup for events that are not weddings?", "Yes. Send me the date and tell me what the event is."),
+            ("How much does it cost?", "Every wedding and event is different, so I price each one individually. Send me your date, where you are getting ready and how many people need makeup, and I will reply with a price."),
         ],
     },
 ]

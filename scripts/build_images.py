@@ -29,6 +29,12 @@ JOBS = {
     "g-brows-3": ("browlam-b-1.jpg", (0.10, 0, 0.90, 1), [640, 400]),
     "g-brows-4": ("browlam-b-0.jpg", (0.10, 0, 0.90, 1), [640, 400]),
     "g-nail-art-2": ("nails-halloween-1.jpg", (0.10, 0, 0.90, 1), [640, 400]),
+    # Wedding makeup. The originals are small (about 850 px wide), so these stay at full size.
+    "svc-makeup": ("bridal-0.jpg", (0, 0, 1, 1), [853, 600]),
+    "g-wed-bride": ("wedding-2.jpg", (0, 0, 1, 1), [1080, 600]),
+    "g-wed-robes": ("wedding-10.jpg", (0, 0, 1, 1), [853, 600]),
+    "g-wed-work": ("wedding-3.jpg", (0, 0, 1, 1), [853, 600]),
+    "g-wed-party": ("wedding-11.jpg", (0, 0, 1, 1), [853, 600]),
 }
 
 # Stacked before and after posts, split on the white divider (pixel rows measured on the originals).

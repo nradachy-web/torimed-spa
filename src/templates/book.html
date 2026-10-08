@@ -2,10 +2,10 @@
 <section class="band band--coal book" id="book">
   <div class="wrap book__in">
     <div class="book__main">
-      <h2>Book an appointment</h2>
-      <p class="book__lede">Send your request and I will confirm your time.</p>
+      <h2>{{book_heading}}</h2>
+      <p class="book__lede">{{book_lede}}</p>
 
-      <form class="form" id="book-form" action="#book" method="post">
+      <form class="form" id="book-form" action="#book" method="post" data-day-label="{{day_label}}" data-opening="{{opening}}">
         <fieldset class="form__block">
           <legend>What are you booking?</legend>
           <ul class="picked" id="picked" hidden></ul>
@@ -19,6 +19,7 @@
               <option>Skin</option>
               <option>Nails</option>
               <option>Wedding makeup</option>
+              <option>Event makeup</option>
               <option>Not sure yet</option>
             </select>
           </div>
@@ -26,10 +27,10 @@
         </fieldset>
 
         <fieldset class="form__block">
-          <legend>When suits you?</legend>
+          <legend>{{when_legend}}</legend>
           <div class="form__row">
             <div class="form__field">
-              <label for="f-day">Preferred day</label>
+              <label for="f-day">{{day_label}}</label>
               <input type="date" id="f-day" name="preferred_day" required>
             </div>
             <div class="form__field">
@@ -60,7 +61,7 @@
             <input type="email" id="f-email" name="email" autocomplete="email">
           </div>
           <div class="form__field">
-            <label for="f-notes">Anything I should know? <span class="form__opt">optional</span></label>
+            <label for="f-notes">{{notes_label}} <span class="form__opt">optional</span></label>
             <textarea id="f-notes" name="notes" rows="3"></textarea>
           </div>
           <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">

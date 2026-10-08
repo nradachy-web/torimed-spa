@@ -127,6 +127,8 @@
   var dockCount = $('#dock-count');
   var dockDetail = $('#dock-detail');
   var dockBtn = $('#dock-btn');
+  // Pages without a price list, such as makeup, ask about a kind of service instead.
+  var pageType = document.body.getAttribute('data-service-type');
   var picked = $('#picked');
   var pickedSum = $('#picked-sum');
   var generalField = $('#general-field');
@@ -156,7 +158,7 @@
 
     picked.hidden = !any;
     pickedSum.hidden = !any;
-    generalField.hidden = any;
+    generalField.hidden = any && !pageType;
     pickLink.textContent = any ? 'Add more from the price list' : 'Pick exact services from the price list';
     picked.innerHTML = '';
     chosen.forEach(function (id) {
@@ -209,6 +211,8 @@
   var iso = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   day.min = iso(now);
 
+  if (pageType) form.service_type.value = pageType;
+
   if (!SITE.formKey) {
     sendBtn.textContent = 'Copy request for Instagram';
     sendNote.textContent = 'This copies your request so you can paste it into a message to me on Instagram.';
@@ -216,15 +220,14 @@
 
   function requestText(data) {
     var t = totals();
-    var lines = ['Hi Tori, I would like to book an appointment.'];
+    var lines = [form.getAttribute('data-opening') || 'Hi Tori, I would like to book an appointment.'];
     if (chosen.length) {
       lines.push('Services: ' + chosen.map(function (id) { return CATALOG[id].name + ' ($' + CATALOG[id].price + ')'; }).join(', '));
       lines.push('Total: $' + t.price + ', about ' + minutesLabel(t.min));
-    } else if (data.service_type) {
-      lines.push('Service: ' + data.service_type);
     }
+    if (data.service_type && !generalField.hidden) lines.push((chosen.length ? 'Also asking about: ' : 'Service: ') + data.service_type);
     var when = new Date(data.preferred_day + 'T12:00:00');
-    lines.push('Preferred day: ' + when.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' }) + ', ' + String(data.time_of_day).toLowerCase());
+    lines.push((form.getAttribute('data-day-label') || 'Preferred day') + ': ' + when.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' }) + ', ' + String(data.time_of_day).toLowerCase());
     lines.push('Name: ' + data.name);
     lines.push('Mobile: ' + data.phone);
     if (data.email) lines.push('Email: ' + data.email);
@@ -281,7 +284,7 @@
         name: data.name,
         phone: data.phone,
         email: data.email,
-        services: chosen.length ? chosen.map(function (id) { return CATALOG[id].name; }).join(', ') : data.service_type,
+        services: chosen.map(function (id) { return CATALOG[id].name; }).concat(data.service_type && !generalField.hidden ? [data.service_type] : []).join(', '),
         total: chosen.length ? '$' + t.price + ', about ' + minutesLabel(t.min) : '',
         preferred_day: data.preferred_day,
         time_of_day: data.time_of_day,

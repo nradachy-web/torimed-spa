@@ -2,7 +2,7 @@
 
 Site for Tori Kruse (ToriMed Spa), a medical aesthetician inside The Beauty Collective, 191 Main Street, Fredericton, NB. Built to replace the Vagaro link in her Instagram bio. Live at https://torimed.ca (GitHub Pages, custom domain in `CNAME`, DNS at Namecheap).
 
-A home page plus one page per service: Korean lash lift, lash lift and tint, brow lamination, Brazilian wax, waxing, facials, microchanneling, manicures and pedicures.
+A home page plus one page per service: Korean lash lift, lash lift and tint, brow lamination, Brazilian wax, waxing, facials, microchanneling, manicures and pedicures, and wedding and event makeup (`/makeup/`, an enquiry page with no price list).
 
 ## How to change it
 
@@ -35,3 +35,4 @@ The copy is written as Tori, in the first person. Brand colours are black and pi
 2. Booking delivery: set `SITE.formKey` in `assets/main.js` to a Web3Forms key that sends to Tori, then prove it with a real submission. Until then the form copies the request for an Instagram message.
 3. Questions for Tori that would make the service pages richer: aftercare for lash lifts and brow lamination, how long a classic lash lift lasts, whether the Korean lash lift includes a tint, what her facials include, how many microchanneling sessions she recommends and the downtime, gel overlay and nail art prices, how long between waxes.
 4. Photos: the waxing, facial and microchanneling pages use her room and portrait because there are no service photos for them yet.
+5. Makeup page: the wedding photos come from her October 5, 2026 Instagram post and look like a professional photographer's work. Tori should confirm the photographer and the couple are fine with them on her website, and whether to add a photo credit. Her makeup prices, whether she travels, and whether she offers trials are not on the page because she has not published them.

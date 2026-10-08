@@ -117,6 +117,27 @@ def quote_band(q):
     )
 
 
+BOOK_DEFAULTS = {
+    "book_heading": "Book an appointment",
+    "book_lede": "Send your request and I will confirm your time.",
+    "when_legend": "When suits you?",
+    "day_label": "Preferred day",
+    "notes_label": "Anything I should know?",
+    "opening": "Hi Tori, I would like to book an appointment.",
+}
+STEPS = [
+    ("Choose your services", "Add them from the price list. You see the time and the total before you send anything."),
+    ("Tell me when you are free", "Pick a day and the time of day that suits you."),
+    ("Get your confirmation", "I reply to confirm your appointment time."),
+]
+
+
+def book_form(menu_anchor, overrides=None):
+    values = dict(BOOK_DEFAULTS, menu_anchor=menu_anchor)
+    values.update(overrides or {})
+    return fill(tpl("book.html"), **values)
+
+
 def catalog_json():
     slim = {k: {"name": v["name"], "price": v["price"], "min": v["min"]} for k, v in CATALOG.items()}
     return json.dumps(slim, ensure_ascii=False, separators=(",", ":"))
@@ -199,7 +220,7 @@ def build_home():
         tpl("home_about.html"),
         tpl("home_review.html"),
         tpl("home_how.html"),
-        fill(tpl("book.html"), menu_anchor="#services"),
+        book_form("#services"),
     ])
     preloads = (
         '<link rel="preload" as="image" type="image/avif" media="(max-width: 899px)" imagesrcset="/assets/img/hero-m-520.avif 520w, /assets/img/hero-m-800.avif 800w" imagesizes="100vw" fetchpriority="high">\n'
@@ -222,7 +243,9 @@ def service_hero(p):
     info = IMAGES[hero["img"]]
     facts = "\n".join(f'        <div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in p["facts"])
     add = f' data-add="{p["primary"]}"' if p["primary"] else ""
-    second = '<a class="btn btn--ghost" href="#results">See results</a>' if p["results"] else '<a class="btn btn--ghost" href="#prices">See prices</a>'
+    second_label = p.get("second_cta") or ("See results" if p["results"] else "See prices")
+    second_href = "#results" if p["results"] else "#prices"
+    second = f'<a class="btn btn--ghost" href="{second_href}">{second_label}</a>'
     return (
         f'<section class="hero hero--service" style="--focus: {hero["focus"]}">\n  <div class="hero__photo">\n'
         + picture(hero["img"], "(min-width: 900px) 56vw, 100vw", hero["alt"], lazy=False, indent="    ")
@@ -273,12 +296,16 @@ def service_results(p):
         cls = "pairs pairs--single" if len(pairs) == 1 else "pairs"
         pairs_html = f'    <div class="{cls}">\n' + "\n".join(pairs) + "\n    </div>\n"
     tiles = []
+    wide = r.get("wide")
+    sizes = "(min-width: 900px) 600px, 92vw" if wide else "(min-width: 900px) 290px, 44vw"
     for img, alt, caption in r["tiles"]:
         cap = f"\n        <p>{caption}</p>" if caption else ""
-        tiles.append('      <li class="tile">\n' + picture(img, "(min-width: 900px) 290px, 44vw", alt) + cap + "\n      </li>")
+        tiles.append('      <li class="tile">\n' + picture(img, sizes, alt) + cap + "\n      </li>")
     tiles_html = ""
     if tiles:
         cls = "tiles tiles--first" if not pairs else "tiles"
+        if wide:
+            cls += " tiles--wide"
         tiles_html = f'    <ul class="{cls}">\n' + "\n".join(tiles) + "\n    </ul>\n"
     more = ""
     if r.get("more"):
@@ -292,6 +319,8 @@ def service_results(p):
 
 def service_prices(p):
     pr = p["prices"]
+    if not pr:
+        return ""
     return (
         '<section class="band band--petal" id="prices">\n  <div class="wrap">\n    <div class="menu">\n      <div class="menu__panel">\n'
         f'        <div class="menu__intro">\n          <h2 class="menu__title">{pr["heading"]}</h2>\n          <p>{pr["intro"]}</p>{pills(pr["links"])}\n        </div>\n'
@@ -302,8 +331,16 @@ def service_prices(p):
 
 
 def service_questions(p):
-    faqs = p["faqs"] + SHARED_FAQS
-    return fill(tpl("service_how.html"), faqs=faq_block(faqs)), faqs
+    shared = [f for f in SHARED_FAQS if f[0] not in p.get("skip_shared", [])]
+    faqs = p["faqs"] + shared
+    steps = "\n".join(
+        f"        <li>\n          <h3>{title}</h3>\n          <p>{text}</p>\n        </li>" for title, text in p.get("steps", STEPS)
+    )
+    html = fill(
+        tpl("service_how.html"), faqs=faq_block(faqs), steps=steps,
+        steps_heading=p.get("steps_heading", "How booking works"), steps_cta=p.get("steps_cta", "Book an appointment"),
+    )
+    return html, faqs
 
 
 def service_jsonld(p, faqs):
@@ -347,7 +384,7 @@ def build_service(p):
         quote_band(p["quote"]),
         service_prices(p),
         questions_html,
-        fill(tpl("book.html"), menu_anchor="#prices"),
+        book_form("#prices" if p["prices"] else "/#services", p.get("book")),
     ]))
     name = p["hero"]["img"]
     srcset = ", ".join(f"/assets/img/{name}-{w}.avif {w}w" for w in info["widths"])
@@ -359,6 +396,8 @@ def build_service(p):
         "og_image": f'{URL}/assets/img/og-{p["slug"]}.jpg',
     }
     attrs = f' data-preselect="{p["primary"]}"' if p["primary"] else ""
+    if p.get("service_type"):
+        attrs += f' data-service-type="{p["service_type"]}"'
     return page(meta, main, preloads, service_jsonld(p, faqs), attrs)
 
 

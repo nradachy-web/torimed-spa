@@ -1,9 +1,10 @@
 /* ToriMed Spa. Brand colours are black and pink; the pink is sampled from Tori's logo. */
 
+/* Young Serif ships one weight. Declaring the range stops browsers faking a bold. */
 @font-face {
-  font-family: "Fraunces";
-  src: url("fonts/fraunces.woff2") format("woff2");
-  font-weight: 400 600;
+  font-family: "Young Serif";
+  src: url("fonts/young-serif.woff2") format("woff2");
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
 }
@@ -32,7 +33,7 @@
   --on-dark-2: rgba(251, 246, 245, 0.74);
   --line-dark: rgba(251, 246, 245, 0.18);
 
-  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --display: "Young Serif", "Iowan Old Style", Georgia, serif;
   --text: "Jost", "Avenir Next", Avenir, "Century Gothic", system-ui, sans-serif;
 
   --wrap: 1240px;
@@ -68,13 +69,12 @@ button { cursor: pointer; }
 
 h1, h2 {
   font-family: var(--display);
-  font-weight: 450;
-  font-optical-sizing: auto;
-  line-height: 1.06;
-  letter-spacing: -0.022em;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.018em;
   text-wrap: balance;
 }
-h2 { font-size: clamp(2.125rem, 1.4rem + 3vw, 3.5rem); }
+h2 { font-size: clamp(1.875rem, 1.3rem + 2.6vw, 3.125rem); }
 h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
 
 :focus-visible { outline: 2px solid var(--rose); outline-offset: 3px; border-radius: 2px; }
@@ -157,7 +157,7 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
     linear-gradient(0deg, var(--black) 0, rgba(10, 10, 10, 0.86) 14%, rgba(10, 10, 10, 0) 46%);
 }
 .hero__in { position: relative; margin-top: -84px; padding-bottom: 56px; }
-.hero__title { font-size: clamp(2.25rem, 1.1rem + 4.9vw, 3.5rem); }
+.hero__title { font-size: clamp(2rem, 1rem + 4.2vw, 3.25rem); }
 .hero__title span { display: block; }
 .hero__title span:nth-child(2) { color: var(--blush); }
 .hero__lede { margin-top: 20px; max-width: 34em; font-size: 1.125rem; line-height: 1.55; color: var(--on-dark-2); }
@@ -194,7 +194,7 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
   }
   .hero__in { margin-top: 0; padding-block: calc(var(--header-h) + 48px) 72px; }
   .hero__copy { max-width: 600px; }
-  .hero__title { font-size: clamp(2.5rem, 4.4vw, 4.75rem); line-height: 1.08; }
+  .hero__title { font-size: clamp(2.25rem, 3.75vw, 4.25rem); line-height: 1.12; }
   .hero__title span { white-space: nowrap; }
   .hero__lede { font-size: 1.1875rem; }
   .hero__actions { margin-top: 36px; }
@@ -254,7 +254,7 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
 .menu__panel.is-entering { animation: panel 0.35s var(--ease) both; }
 @keyframes panel { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .menu__intro { display: grid; gap: 8px; padding-bottom: clamp(18px, 3vw, 28px); border-bottom: 1px solid var(--line); }
-.menu__intro h3 { font-family: var(--display); font-weight: 500; font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.375rem); line-height: 1.08; letter-spacing: -0.01em; }
+.menu__intro h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.625rem, 1.3rem + 1.3vw, 2.125rem); line-height: 1.08; letter-spacing: -0.01em; }
 .menu__intro p { color: var(--ink-2); max-width: 40em; }
 .menu__cols { display: grid; gap: 8px 64px; }
 .menu__group { padding-top: clamp(20px, 3vw, 30px); }
@@ -314,7 +314,7 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
 .about__copy > * + * { margin-top: 22px; }
 .about__copy p { max-width: 34em; }
 .about__quote { padding: 4px 0 4px 22px; border-left: 2px solid var(--rose); }
-.about__quote p { font-family: var(--display); font-weight: 500; font-size: clamp(1.375rem, 1.1rem + 1vw, 1.75rem); line-height: 1.28; letter-spacing: -0.005em; }
+.about__quote p { font-family: var(--display); font-weight: 400; font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.5625rem); line-height: 1.32; letter-spacing: -0.005em; }
 .checks { display: grid; gap: 12px; }
 .checks li { position: relative; padding-left: 34px; }
 .checks li::before { content: ""; position: absolute; left: 0; top: 0.2em; width: 22px; height: 22px; border-radius: 50%; background: var(--blush); }
@@ -327,7 +327,7 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
 /* Review */
 .review { padding-block: clamp(64px, 9vw, 120px); }
 .review__in { display: grid; gap: 44px; }
-.review blockquote p { font-family: var(--display); font-weight: 500; font-size: clamp(1.75rem, 1.2rem + 2.4vw, 3rem); line-height: 1.16; letter-spacing: -0.012em; color: var(--black); text-wrap: balance; }
+.review blockquote p { font-family: var(--display); font-weight: 400; font-size: clamp(1.5rem, 1.1rem + 2vw, 2.625rem); line-height: 1.2; letter-spacing: -0.012em; color: var(--black); text-wrap: balance; }
 .review figcaption { margin-top: 22px; display: grid; gap: 2px; font-size: 1rem; color: var(--ink-2); }
 .review__who { font-weight: 500; color: var(--ink); font-size: 1.0625rem; }
 .review__second { padding-top: 32px; border-top: 1px solid rgba(18, 18, 18, 0.18); }

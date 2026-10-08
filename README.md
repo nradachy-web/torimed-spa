@@ -20,9 +20,11 @@ Plain HTML, CSS and JavaScript. No build step: edit the files and push.
 - Photos and logo: her Instagram (@torimed.spa). The hero portrait has extra blank wall added above her head; nothing else is altered.
 - Parking and the 24 hour cancellation policy: The Beauty Collective's Vagaro listing.
 
-## Before launch
+## Launch status
+
+Live at https://torimed.ca since October 8, 2026 (GitHub Pages, custom domain set in `CNAME`, DNS at Namecheap: four A records plus a `www` CNAME).
+
+Still open:
 
 1. Tori confirms prices, the cancellation policy and that her clients are fine with their photos on the site.
 2. Booking delivery: set `SITE.formKey` in `assets/main.js` to a Web3Forms key that sends to Tori, then prove it with a real submission. Until then the form copies the request for an Instagram message.
-3. Remove the `noindex` line in `index.html`.
-4. Point torimed.ca at GitHub Pages (four A records plus a `www` CNAME), wait for it to resolve, then set the custom domain in the repo's Pages settings.

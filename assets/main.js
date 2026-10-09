@@ -327,6 +327,7 @@
         })
       }).then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.success) throw new Error('not sent');
+        if (window.gtag) window.gtag('event', 'generate_lead', { form_page: location.pathname });
         form.reset();
         if (pageType) form.service_type.value = pageType;
         chosen = [];

@@ -6,7 +6,10 @@
   // If the key is ever removed, the form falls back to copying the request for an Instagram message.
   var SITE = {
     formKey: '44fecf0f-984e-4514-b0a5-0ec33384a58e',
-    instagram: 'torimed.spa'
+    instagram: 'torimed.spa',
+    // Google Ads conversions: a booking request that was delivered, and a tap on "message me on Instagram".
+    adsBooking: 'AW-18504296452/HyDGCOiv25cdEITQxPdE',
+    adsInstagram: 'AW-18504296452/CVyGCOuv25cdEITQxPdE'
   };
 
   // Every service with its price and minutes, written into each page by src/build.py.
@@ -70,6 +73,12 @@
   window.addEventListener('load', function () {
     if (!location.hash || !window.history || !history.replaceState) return;
     setTimeout(function () { history.replaceState(null, '', location.pathname + location.search); }, 0);
+  });
+
+  /* Count a tap on any "message me on Instagram" link, including the one the form shows when a send fails. */
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href^="https://ig.me/m/"]');
+    if (link && window.gtag) window.gtag('event', 'conversion', { send_to: SITE.adsInstagram });
   });
 
   /* Category tabs on the home page. Without JavaScript every panel simply stays visible. */
@@ -327,7 +336,10 @@
         })
       }).then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.success) throw new Error('not sent');
-        if (window.gtag) window.gtag('event', 'generate_lead', { form_page: location.pathname });
+        if (window.gtag) {
+          window.gtag('event', 'generate_lead', { form_page: location.pathname });
+          window.gtag('event', 'conversion', { send_to: SITE.adsBooking });
+        }
         form.reset();
         if (pageType) form.service_type.value = pageType;
         chosen = [];

@@ -8,7 +8,7 @@ from her listings and her Instagram captions. Do not add a claim here that she h
 SITE = {
     "url": "https://torimed.ca",
     "name": "ToriMed Spa",
-    "asset_version": "10",
+    "asset_version": "11",
 }
 
 IG = "https://www.instagram.com/torimed.spa/"

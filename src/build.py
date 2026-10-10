@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
-from content import BOOKING_FAQS, CATALOG, CATEGORIES, HOME_FAQS, IG_DM, PAGES, SHARED_FAQS, SITE  # noqa: E402
+from content import BOOKING_FAQS, CATALOG, CATEGORIES, COLLECTIVE, EMILY, HOME_FAQS, IG_DM, LANDINGS, PAGES, SHARED_FAQS, SITE  # noqa: E402
 
 IMAGES = json.load(open(os.path.join(HERE, "images.json")))
 V = SITE["asset_version"]
@@ -150,20 +150,22 @@ def catalog_json():
     return json.dumps(slim, ensure_ascii=False, separators=(",", ":"))
 
 
-def page(meta, main, preloads, jsonld, body_attrs=""):
+def page(meta, main, preloads, jsonld, body_attrs="", chrome=None):
+    """chrome=(header, footer) swaps the site menu and footer for a landing page's own, and keeps the page out of search."""
     return fill(
         tpl("base.html"),
         title=meta["title"],
         description=meta["description"],
         canonical=meta["canonical"],
+        robots='<meta name="robots" content="noindex, follow">\n' if chrome else "",
         og_title=meta.get("og_title", meta["title"]),
         og_image=meta["og_image"],
         preloads=preloads,
         jsonld=json.dumps(jsonld, ensure_ascii=False, indent=2),
         body_attrs=body_attrs,
-        header=header(meta.get("path", "")),
+        header=chrome[0] if chrome else header(meta.get("path", "")),
         main=main,
-        footer=footer(),
+        footer=chrome[1] if chrome else footer(),
         dock=tpl("dock.html"),
         catalog=catalog_json(),
         v=V,
@@ -217,6 +219,12 @@ def business_jsonld():
     }
 
 
+HERO_PRELOADS = (
+    '<link rel="preload" as="image" type="image/avif" media="(max-width: 899px)" imagesrcset="/assets/img/hero-m-520.avif 520w, /assets/img/hero-m-800.avif 800w" imagesizes="100vw" fetchpriority="high">\n'
+    '<link rel="preload" as="image" type="image/avif" media="(min-width: 900px)" imagesrcset="/assets/img/hero-760.avif 760w, /assets/img/hero-1160.avif 1160w" imagesizes="56vw" fetchpriority="high">'
+)
+
+
 def build_home():
     tabs, panels = home_menu()
     main = "\n".join([
@@ -229,10 +237,6 @@ def build_home():
         fill(tpl("home_how.html"), faqs=faq_block(HOME_FAQS)),
         book_form("#services"),
     ])
-    preloads = (
-        '<link rel="preload" as="image" type="image/avif" media="(max-width: 899px)" imagesrcset="/assets/img/hero-m-520.avif 520w, /assets/img/hero-m-800.avif 800w" imagesizes="100vw" fetchpriority="high">\n'
-        '<link rel="preload" as="image" type="image/avif" media="(min-width: 900px)" imagesrcset="/assets/img/hero-760.avif 760w, /assets/img/hero-1160.avif 1160w" imagesizes="56vw" fetchpriority="high">'
-    )
     meta = {
         "title": "ToriMed Spa | Waxing, brows, lashes and skin in Fredericton, NB",
         "og_title": "ToriMed Spa | Waxing, brows, lashes and skin in Fredericton",
@@ -240,7 +244,7 @@ def build_home():
         "canonical": URL + "/",
         "og_image": URL + "/assets/img/og.jpg",
     }
-    return page(meta, main, preloads, business_jsonld())
+    return page(meta, main, HERO_PRELOADS, business_jsonld())
 
 
 # ---------------------------------------------------------------- service pages
@@ -414,6 +418,79 @@ def build_service(p):
     if p.get("service_type"):
         attrs += f' data-service-type="{p["service_type"]}"'
     return page(meta, main, preloads, service_jsonld(p, faqs), attrs)
+
+
+# ---------------------------------------------------------------- landing pages for ads
+
+def landing_hero(lp):
+    facts = "\n".join(f'        <div><dt>{k}</dt><dd>{v}</dd></div>' for k, v in lp["facts"])
+    trust = "\n".join(f"        <li>{t}</li>" for t in lp["trust"])
+    return (
+        '<section class="hero hero--service hero--lp">\n  <div class="hero__photo">\n    <picture>\n'
+        '      <source media="(max-width: 899px)" type="image/avif" srcset="/assets/img/hero-m-520.avif 520w, /assets/img/hero-m-800.avif 800w" sizes="100vw">\n'
+        '      <source media="(max-width: 899px)" type="image/webp" srcset="/assets/img/hero-m-520.webp 520w, /assets/img/hero-m-800.webp 800w" sizes="100vw">\n'
+        '      <source type="image/avif" srcset="/assets/img/hero-760.avif 760w, /assets/img/hero-1160.avif 1160w" sizes="56vw">\n'
+        '      <source type="image/webp" srcset="/assets/img/hero-760.webp 760w, /assets/img/hero-1160.webp 1160w" sizes="56vw">\n'
+        '      <img src="/assets/img/hero-1160.webp" width="1160" height="1299" alt="Tori Kruse, medical aesthetician and owner of ToriMed Spa" fetchpriority="high" decoding="async">\n'
+        '    </picture>\n  </div>\n  <div class="wrap hero__in">\n    <div class="hero__copy">\n'
+        f'      <h1 class="hero__title">{lp["h1"]}</h1>\n'
+        f'      <p class="hero__lede">{lp["lede"]}</p>\n'
+        f'      <dl class="facts">\n{facts}\n      </dl>\n'
+        f'      <div class="hero__actions">\n        <a class="btn btn--blush" {BOOK_LINK} data-add="{lp["service"]}">{lp["cta"]}</a>\n'
+        f'        <a class="btn btn--ghost" href="{IG_DM}" target="_blank" rel="noopener">Ask me first on Instagram</a>\n      </div>\n'
+        f'      <ul class="hero__trust">\n{trust}\n      </ul>\n'
+        "    </div>\n  </div>\n</section>\n"
+    )
+
+
+def landing_me(lp):
+    me = lp["me"]
+    paras = "\n".join(f"      <p>{t}</p>" for t in me["paras"])
+    checks = "\n".join(f"        <li>{t}</li>" for t in me["checks"])
+    return (
+        '<section class="band band--coal" id="about-me">\n  <div class="wrap about">\n    <figure class="about__photo">\n'
+        + picture("room", "(min-width: 900px) 560px, 92vw", "My treatment room: a deep green wall, a round mirror with pink flowers, white cabinets and a treatment bed", indent="      ")
+        + f'\n      <figcaption>{me["caption"]}</figcaption>\n    </figure>\n    <div class="about__copy">\n'
+        f'      <h2>{me["heading"]}</h2>\n{paras}\n'
+        f'      <div class="about__quote">\n        <p>{me["quote"]}</p>\n      </div>\n'
+        f'      <ul class="checks">\n{checks}\n      </ul>\n'
+        f'      <a class="btn btn--blush" {BOOK_LINK}>{lp["cta"]}</a>\n    </div>\n  </div>\n</section>\n'
+    )
+
+
+def review_pair(first, second):
+    """The two quotes from the home page, in the order a page wants them."""
+    def figure(q, cls=""):
+        return (
+            f'    <figure{cls}>\n      <blockquote>\n        <p>“{q["quote"]}”</p>\n      </blockquote>\n      <figcaption>\n'
+            f'        <span class="review__who">{q["who"]}</span>\n        <span>{q["detail"]}</span>\n      </figcaption>\n    </figure>\n'
+        )
+    return (
+        '<section class="band band--blush review" aria-label="In their words">\n  <div class="wrap review__in">\n'
+        + figure(first) + figure(second, ' class="review__second"') + "  </div>\n</section>\n"
+    )
+
+
+def build_landing(lp):
+    path = f'/{lp["slug"]}/'
+    faqs = lp["faqs"] + SHARED_FAQS
+    main = "\n".join([
+        landing_hero(lp),
+        service_about(lp),
+        landing_me(lp),
+        review_pair(COLLECTIVE, EMILY),
+        steps_and_questions(faqs, lp["steps"], cta=lp["cta"]),
+        book_form("", lp["book"]),
+    ])
+    meta = {
+        "title": lp["title"], "description": lp["description"], "canonical": URL + path,
+        "og_image": f'{URL}/assets/img/{lp["og_image"]}', "path": path,
+    }
+    chrome = (
+        fill(tpl("lp_header.html"), cta=lp["cta"]),
+        fill(tpl("lp_footer.html"), cta=lp["cta"], line=f'{CATALOG[lp["service"]]["name"]} with Tori Kruse, medical aesthetician.'),
+    )
+    return page(meta, main, HERO_PRELOADS, simple_jsonld(lp["h1"], path), f' data-preselect="{lp["service"]}" data-landing', chrome)
 
 
 # ---------------------------------------------------------------- book, services, results, about, questions
@@ -602,6 +679,8 @@ def main():
     for p in PAGES:
         write(f'{p["slug"]}/index.html', build_service(p))
         urls.append(f'{URL}/{p["slug"]}/')
+    for lp in LANDINGS:  # ad landing pages stay out of the sitemap
+        write(f'{lp["slug"]}/index.html', build_landing(lp))
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     sitemap += "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n"
     write("sitemap.xml", sitemap)

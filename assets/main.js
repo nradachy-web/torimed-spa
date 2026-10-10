@@ -39,20 +39,23 @@
   var nav = $('#nav');
   var group = $('.nav__group');
   var groupBtn = $('.nav__toggle');
-  function closeGroup() { group.classList.remove('is-open'); groupBtn.setAttribute('aria-expanded', 'false'); }
-  function closeNav() { nav.classList.remove('is-open'); menuBtn.setAttribute('aria-expanded', 'false'); closeGroup(); onScroll(); }
-  menuBtn.addEventListener('click', function () {
-    var open = nav.classList.toggle('is-open');
-    menuBtn.setAttribute('aria-expanded', String(open));
-    if (open) header.classList.add('is-solid'); else onScroll();
-  });
-  groupBtn.addEventListener('click', function () {
-    var open = group.classList.toggle('is-open');
-    groupBtn.setAttribute('aria-expanded', String(open));
-  });
-  nav.addEventListener('click', function (e) { if (e.target.closest('a')) closeNav(); });
-  document.addEventListener('click', function (e) { if (!e.target.closest('.nav__group')) closeGroup(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeNav(); });
+  // Ad landing pages have no menu, only the booking button.
+  if (nav) {
+    var closeGroup = function () { group.classList.remove('is-open'); groupBtn.setAttribute('aria-expanded', 'false'); };
+    var closeNav = function () { nav.classList.remove('is-open'); menuBtn.setAttribute('aria-expanded', 'false'); closeGroup(); onScroll(); };
+    menuBtn.addEventListener('click', function () {
+      var open = nav.classList.toggle('is-open');
+      menuBtn.setAttribute('aria-expanded', String(open));
+      if (open) header.classList.add('is-solid'); else onScroll();
+    });
+    groupBtn.addEventListener('click', function () {
+      var open = group.classList.toggle('is-open');
+      groupBtn.setAttribute('aria-expanded', String(open));
+    });
+    nav.addEventListener('click', function (e) { if (e.target.closest('a')) closeNav(); });
+    document.addEventListener('click', function (e) { if (!e.target.closest('.nav__group')) closeGroup(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeNav(); });
+  }
 
   /* Clean addresses. Every link is a real page (/book/, /services/ and so on). When the thing a link
      points at is already on this page, scroll to it instead of leaving, and never put a "#" in the address. */

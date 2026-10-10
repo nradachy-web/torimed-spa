@@ -8,7 +8,7 @@ from her listings and her Instagram captions. Do not add a claim here that she h
 SITE = {
     "url": "https://torimed.ca",
     "name": "ToriMed Spa",
-    "asset_version": "11",
+    "asset_version": "12",
 }
 
 IG = "https://www.instagram.com/torimed.spa/"
@@ -546,5 +546,55 @@ PAGES = [
             ("Do you do makeup for events that are not weddings?", "Yes. Send me the date and tell me what the event is."),
             ("How much does it cost?", "Every wedding and event is different, so I price each one individually. Send me your date, where you are getting ready and how many people need makeup, and I will reply with a price."),
         ],
+    },
+]
+
+# Landing pages for ads: one service, one action, no site menu. Kept out of search results and the sitemap.
+# Same rule as above: nothing here that Tori has not said, apart from the plain fact that microchanneling
+# is a form of microneedling (how dermatologists describe it), which is there for people who searched that word.
+LANDINGS = [
+    {
+        "slug": "microchanneling-fredericton",
+        "service": "microchanneling",
+        "title": "Microchanneling in Fredericton, $300 | ToriMed Spa",
+        "description": "Microchanneling with Tori Kruse, a medical aesthetician in Fredericton, for fine lines, wrinkles, scarring and acne. $300. Pick a day and send your booking request.",
+        "og_image": "og-microchanneling.jpg",
+        "h1": "Microchanneling in Fredericton",
+        "lede": "A skin treatment I use for fine lines, wrinkles, scarring and acne. I’m Tori Kruse, a medical aesthetician.",
+        "cta": "Book microchanneling",
+        "facts": [("Price", "$300"), ("Appointment", "1 h 15 min")],
+        "trust": ["Medical aesthetician", "Aesthetician since 2021", "Free parking at 191 Main Street"],
+        "about": {
+            "heading": "What microchanneling is",
+            "paras": [
+                "Microchanneling makes very fine channels in the surface of the skin, which prompts the skin to renew itself.",
+                "It is a form of microneedling. If you searched for microneedling in Fredericton, this is the treatment I offer.",
+            ],
+            "aside": {"type": "checks", "heading": "I use it for", "items": ["Fine lines", "Wrinkles", "Scarring", "Acne"]},
+        },
+        "me": {
+            "heading": "Your appointment is with me",
+            "paras": ["I’m Tori. I’ve been an aesthetician since 2021, and my appointments are in my own treatment room at The Beauty Collective."],
+            "quote": "I love my job because meeting you guys, making you feel your best, makes me also feel my best.",
+            "checks": ["$300 for a 1 hour 15 minute appointment", "My own treatment room", "Free parking at 191 Main Street"],
+            "caption": "My room at The Beauty Collective, 191 Main Street.",
+        },
+        "steps": [
+            ("Tell me when you are free", "Pick a day and the time of day that suits you."),
+            ("Get your confirmation", "I reply to confirm your appointment time."),
+            ("Come to 191 Main Street", "My room is inside The Beauty Collective. Parking is free."),
+        ],
+        "faqs": [
+            ("Is microchanneling the same as microneedling?", "Microchanneling is a form of microneedling. It makes very fine channels in the surface of the skin, which prompts the skin to renew itself."),
+            ("What do you use microchanneling for?", "Fine lines, wrinkles, scarring and acne."),
+            ("How much is it?", "$300 per appointment."),
+            ("How long is the appointment?", "Set aside 1 hour 15 minutes."),
+            ("Is it right for my skin?", "<a href=\"" + IG_DM + "\" target=\"_blank\" rel=\"noopener\">Message me on Instagram</a> before you book and we can talk it through."),
+            ("Who will I see?", "Me. I’m Tori Kruse, a medical aesthetician, and I have been an aesthetician since 2021."),
+        ],
+        "book": {
+            "book_heading": "Book microchanneling",
+            "opening": "Hi Tori, I would like to book microchanneling.",
+        },
     },
 ]

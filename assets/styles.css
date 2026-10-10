@@ -587,6 +587,31 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
   .dock:not(.has-sum) { display: none; }
 }
 
+/* Ad landing pages: no site menu, the booking button always in the header, and an about band on the dark ground */
+.site-header--lp .site-header__cta { display: inline-flex; }
+[data-landing] #pick-link { display: none; }
+.cta-long { display: none; }
+.hero--lp .hero__photo { height: min(44svh, 400px); }
+.hero--lp .hero__photo img { object-position: 50% 0; }
+.band--coal .about__photo picture { background: var(--coal-2); }
+.band--coal .about__photo figcaption, .band--coal .about__copy p { color: var(--on-dark-2); }
+.band--coal .about__quote { border-left-color: var(--blush); }
+.band--coal .about__quote p { color: var(--on-dark); }
+@media (max-width: 559px) {
+  .hero--lp .facts { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line-dark); }
+  .hero--lp .facts > div { display: block; padding: 12px 0; border-bottom: 0; }
+  .hero--lp .facts > div + div { padding-left: 20px; border-left: 1px solid var(--line-dark); }
+  .hero--lp .facts dd { margin-top: 2px; text-align: left; }
+}
+@media (min-width: 560px) {
+  .cta-long { display: inline; }
+  .cta-short { display: none; }
+}
+@media (min-width: 900px) {
+  .hero--lp .hero__photo { height: auto; }
+  .site-footer--lp .site-footer__in { grid-template-columns: 1.35fr 1fr 1fr; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }

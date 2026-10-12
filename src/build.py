@@ -18,6 +18,13 @@ sys.path.insert(0, HERE)
 from content import BOOKING_FAQS, CATALOG, CATEGORIES, COLLECTIVE, EMILY, HOME_FAQS, IG_DM, LANDINGS, PAGES, SHARED_FAQS, SITE  # noqa: E402
 
 IMAGES = json.load(open(os.path.join(HERE, "images.json")))
+GOOGLE = {
+    "place_id": "ChIJK9hcxT8ZpEwRtSVKSnVI1jQ",
+    "maps": "https://maps.google.com/?cid=3807310203583079861",
+    "lat": 45.9778855,
+    "lng": -66.651552,
+}
+REVIEW_LINK = "https://search.google.com/local/writereview?placeid=" + GOOGLE["place_id"]
 V = SITE["asset_version"]
 URL = SITE["url"]
 
@@ -94,7 +101,7 @@ def header(current=""):
 
 def footer():
     services = "\n".join(f'      <a href="/{p["slug"]}/">{p["nav"]}</a>' for p in PAGES)
-    return fill(tpl("footer.html"), services=services)
+    return fill(tpl("footer.html"), services=services, maps=GOOGLE["maps"])
 
 
 def faq_block(items):
@@ -140,7 +147,7 @@ STEPS = [
 
 
 def book_form(menu_anchor, overrides=None):
-    values = dict(BOOK_DEFAULTS, menu_anchor=menu_anchor)
+    values = dict(BOOK_DEFAULTS, menu_anchor=menu_anchor, maps=GOOGLE["maps"])
     values.update(overrides or {})
     return fill(tpl("book.html"), **values)
 
@@ -193,18 +200,20 @@ def home_menu():
     return "\n".join(tabs), "\n\n".join(panels)
 
 
-def business_jsonld():
-    offers = [
-        {"@type": "Offer", "price": str(s["price"]), "priceCurrency": "CAD", "itemOffered": {"@type": "Service", "name": s["name"]}}
-        for s in CATALOG.values()
-    ]
+def offer(sid):
+    s = CATALOG[sid]
+    return {"@type": "Offer", "price": str(s["price"]), "priceCurrency": "CAD", "itemOffered": {"@type": "Service", "name": s["name"]}}
+
+
+def business_node():
+    """The business as Google lists it. Every page carries it, so a page's Service can name its provider."""
     return {
-        "@context": "https://schema.org",
         "@type": "BeautySalon",
         "@id": URL + "/#business",
         "name": "ToriMed Spa",
         "url": URL + "/",
         "image": URL + "/assets/img/og.jpg",
+        "logo": URL + "/assets/img/logo-150.png",
         "description": "Waxing, brow lamination, lash lifts, facials, microchanneling and gel nails by medical aesthetician Tori Kruse in Fredericton, New Brunswick.",
         "priceRange": "$15 to $300",
         "currenciesAccepted": "CAD",
@@ -212,11 +221,19 @@ def business_jsonld():
             "@type": "PostalAddress", "streetAddress": "191 Main Street", "addressLocality": "Fredericton",
             "addressRegion": "NB", "postalCode": "E3A 1E1", "addressCountry": "CA",
         },
-        "areaServed": "Fredericton, New Brunswick",
-        "sameAs": ["https://www.instagram.com/torimed.spa/"],
+        "geo": {"@type": "GeoCoordinates", "latitude": GOOGLE["lat"], "longitude": GOOGLE["lng"]},
+        "hasMap": GOOGLE["maps"],
+        "areaServed": {"@type": "City", "name": "Fredericton", "containedInPlace": {"@type": "AdministrativeArea", "name": "New Brunswick"}},
+        "sameAs": ["https://www.instagram.com/torimed.spa/", GOOGLE["maps"]],
         "founder": {"@type": "Person", "name": "Tori Kruse", "jobTitle": "Medical aesthetician"},
-        "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Services and prices", "itemListElement": offers},
     }
+
+
+def business_jsonld():
+    business = business_node()
+    business["hasOfferCatalog"] = {"@type": "OfferCatalog", "name": "Services and prices", "itemListElement": [offer(sid) for sid in CATALOG]}
+    site = {"@type": "WebSite", "@id": URL + "/#website", "name": "ToriMed Spa", "url": URL + "/", "publisher": {"@id": URL + "/#business"}}
+    return {"@context": "https://schema.org", "@graph": [business, site]}
 
 
 HERO_PRELOADS = (
@@ -238,7 +255,7 @@ def build_home():
         book_form("#services"),
     ])
     meta = {
-        "title": "ToriMed Spa | Waxing, brows, lashes and skin in Fredericton, NB",
+        "title": "ToriMed Spa in Fredericton | Waxing, brows, lashes, skin and nails",
         "og_title": "ToriMed Spa | Waxing, brows, lashes and skin in Fredericton",
         "description": "I’m Tori Kruse, a medical aesthetician in Fredericton. Waxing is my specialty, and I also do brow lamination, lash lifts, facials, microchanneling and gel nails. See every price and book an appointment.",
         "canonical": URL + "/",
@@ -363,20 +380,23 @@ def service_questions(p):
 
 def service_jsonld(p, faqs):
     graph = [
+        business_node(),
         {
             "@type": "Service",
             "@id": f'{URL}/{p["slug"]}/#service',
-            "name": p["h1"],
+            "name": p["nav"],
+            "serviceType": p["nav"],
             "description": p["description"],
             "url": f'{URL}/{p["slug"]}/',
             "provider": {"@id": URL + "/#business"},
-            "areaServed": "Fredericton, New Brunswick",
+            "areaServed": {"@type": "City", "name": "Fredericton"},
         },
         {
             "@type": "BreadcrumbList",
             "itemListElement": [
                 {"@type": "ListItem", "position": 1, "name": "ToriMed Spa", "item": URL + "/"},
-                {"@type": "ListItem", "position": 2, "name": p["h1"], "item": f'{URL}/{p["slug"]}/'},
+                {"@type": "ListItem", "position": 2, "name": "Services and prices", "item": URL + "/services/"},
+                {"@type": "ListItem", "position": 3, "name": p["nav"], "item": f'{URL}/{p["slug"]}/'},
             ],
         },
         {
@@ -388,7 +408,10 @@ def service_jsonld(p, faqs):
     ]
     if p["primary"]:
         s = CATALOG[p["primary"]]
-        graph[0]["offers"] = {"@type": "Offer", "price": str(s["price"]), "priceCurrency": "CAD"}
+        graph[1]["offers"] = {"@type": "Offer", "price": str(s["price"]), "priceCurrency": "CAD"}
+    elif p["prices"]:  # a page for several services lists the first group on its price list
+        name, ids = p["prices"]["groups"][0]
+        graph[1]["hasOfferCatalog"] = {"@type": "OfferCatalog", "name": name, "itemListElement": [offer(sid) for sid in ids]}
     return {"@context": "https://schema.org", "@graph": graph}
 
 
@@ -411,7 +434,7 @@ def build_service(p):
         "title": p["title"],
         "description": p["description"],
         "canonical": f'{URL}/{p["slug"]}/',
-        "og_image": f'{URL}/assets/img/og-{p["slug"]}.jpg',
+        "og_image": f'{URL}/assets/img/{p.get("og") or "og-" + p["slug"] + ".jpg"}',
         "path": f'/{p["slug"]}/',
     }
     attrs = f' data-preselect="{p["primary"]}"' if p["primary"] else ""
@@ -495,7 +518,7 @@ def build_landing(lp):
 
 # ---------------------------------------------------------------- book, services, results, about, questions
 
-MAPS = "https://www.google.com/maps/search/?api=1&amp;query=The+Beauty+Collective%2C+191+Main+Street%2C+Fredericton%2C+NB+E3A+1E1"
+MAPS = GOOGLE["maps"]
 BY_SLUG = {p["slug"]: p for p in PAGES}
 
 
@@ -519,6 +542,7 @@ def simple_meta(path, title, description):
 
 def simple_jsonld(name, path, faqs=None):
     graph = [
+        business_node(),
         {"@type": "WebPage", "@id": URL + path, "name": name, "url": URL + path, "about": {"@id": URL + "/#business"}},
         {
             "@type": "BreadcrumbList",
@@ -543,7 +567,7 @@ def build_book():
         steps_and_questions(faqs, cta="See services and prices", link='href="/services/"'),
     ])
     meta = simple_meta(
-        "/book/", "Book an appointment | ToriMed Spa",
+        "/book/", "Book an appointment in Fredericton | ToriMed Spa",
         "Send a booking request to Tori Kruse at ToriMed Spa in Fredericton. Choose your services, pick a day, and get your appointment time confirmed.",
     )
     return page(meta, main, "", simple_jsonld("Book an appointment", "/book/", faqs))
@@ -629,7 +653,7 @@ def build_about():
         cta_band(),
     ])
     meta = simple_meta(
-        "/about/", "About Tori Kruse, medical aesthetician | ToriMed Spa",
+        "/about/", "Tori Kruse, medical aesthetician in Fredericton | ToriMed Spa",
         "Tori Kruse has been an aesthetician since 2021 and specializes in waxing. Meet her, see her treatment room at The Beauty Collective in Fredericton, and read what clients say.",
     )
     return page(meta, main, "", simple_jsonld("About me", "/about/"))
@@ -659,6 +683,46 @@ def build_questions():
     return page(meta, main, "", simple_jsonld("Questions", "/questions/", every))
 
 
+def build_review():
+    """torimed.ca/review/ sends a client straight to the Google review form. Short enough to text or print."""
+    return (
+        '<!doctype html>\n<html lang="en-CA">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        '<meta name="robots" content="noindex">\n<title>Review ToriMed Spa on Google</title>\n'
+        f'<meta http-equiv="refresh" content="0; url={REVIEW_LINK}">\n<link rel="canonical" href="{URL}/review/">\n'
+        f'<script>location.replace("{REVIEW_LINK}");</script>\n</head>\n<body>\n'
+        f'<p><a href="{REVIEW_LINK}">Leave a Google review for ToriMed Spa</a></p>\n</body>\n</html>\n'
+    )
+
+
+def build_llms():
+    """A plain text summary of the business, in the llms.txt convention, written from the same facts as the pages."""
+    lines = [
+        "# ToriMed Spa",
+        "",
+        "> Waxing, brow lamination, lash lifts, facials, microchanneling and gel nails by medical aesthetician Tori Kruse in Fredericton, New Brunswick, Canada.",
+        "",
+        "- Address: Inside The Beauty Collective, 191 Main Street, Fredericton, NB E3A 1E1. Parking is free.",
+        "- Aesthetician since 2021. Waxing is her specialty.",
+        f"- Booking: send a booking request at {URL}/book/",
+        "- Instagram: https://www.instagram.com/torimed.spa/",
+        f"- Google listing: {GOOGLE['maps']}",
+        "- Prices are in Canadian dollars.",
+        "",
+        "## Service pages",
+        "",
+    ]
+    lines += [f'- [{p["nav"]}]({URL}/{p["slug"]}/): {p["description"]}' for p in PAGES]
+    lines += ["", "## Prices", ""]
+    for c in CATEGORIES:
+        for group, ids in c["groups"]:
+            lines.append(f"### {group}")
+            lines.append("")
+            lines += [f'- {CATALOG[i]["name"]}: ${CATALOG[i]["price"]}, {minutes_label(CATALOG[i]["min"])}' for i in ids]
+            lines.append("")
+    lines += ["## More", "", f"- [Services and prices]({URL}/services/)", f"- [Results]({URL}/results/)", f"- [About Tori]({URL}/about/)", f"- [Questions]({URL}/questions/)", ""]
+    return "\n".join(lines)
+
+
 def write(path, text):
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -681,6 +745,8 @@ def main():
         urls.append(f'{URL}/{p["slug"]}/')
     for lp in LANDINGS:  # ad landing pages stay out of the sitemap
         write(f'{lp["slug"]}/index.html', build_landing(lp))
+    write("review/index.html", build_review())  # a redirect, also out of the sitemap
+    write("llms.txt", build_llms())
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     sitemap += "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n"
     write("sitemap.xml", sitemap)

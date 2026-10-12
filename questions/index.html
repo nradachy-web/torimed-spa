@@ -41,6 +41,48 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BeautySalon",
+      "@id": "https://torimed.ca/#business",
+      "name": "ToriMed Spa",
+      "url": "https://torimed.ca/",
+      "image": "https://torimed.ca/assets/img/og.jpg",
+      "logo": "https://torimed.ca/assets/img/logo-150.png",
+      "description": "Waxing, brow lamination, lash lifts, facials, microchanneling and gel nails by medical aesthetician Tori Kruse in Fredericton, New Brunswick.",
+      "priceRange": "$15 to $300",
+      "currenciesAccepted": "CAD",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "191 Main Street",
+        "addressLocality": "Fredericton",
+        "addressRegion": "NB",
+        "postalCode": "E3A 1E1",
+        "addressCountry": "CA"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 45.9778855,
+        "longitude": -66.651552
+      },
+      "hasMap": "https://maps.google.com/?cid=3807310203583079861",
+      "areaServed": {
+        "@type": "City",
+        "name": "Fredericton",
+        "containedInPlace": {
+          "@type": "AdministrativeArea",
+          "name": "New Brunswick"
+        }
+      },
+      "sameAs": [
+        "https://www.instagram.com/torimed.spa/",
+        "https://maps.google.com/?cid=3807310203583079861"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Tori Kruse",
+        "jobTitle": "Medical aesthetician"
+      }
+    },
+    {
       "@type": "WebPage",
       "@id": "https://torimed.ca/questions/",
       "name": "Questions",
@@ -122,7 +164,7 @@
           "name": "Do you wax men?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. My menu includes back, chest and male anatomy Brazilian waxing."
+            "text": "Yes. My menu includes back, chest and male anatomy Brazilian waxing. See waxing for men."
           }
         },
         {
@@ -287,10 +329,26 @@
         },
         {
           "@type": "Question",
+          "name": "Is microchanneling the same as microneedling?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Microchanneling is a form of microneedling. It makes very fine channels in the surface of the skin, which prompts the skin to renew itself."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "What do you use microchanneling for?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Fine lines, wrinkles, scarring and acne."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much is it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "$300 per appointment."
           }
         },
         {
@@ -395,8 +453,10 @@
           <a href="/korean-lash-lift/">Korean lash lift</a>
           <a href="/lash-lift-and-tint/">Lash lift and tint</a>
           <a href="/brow-lamination/">Brow lamination</a>
+          <a href="/eyebrow-waxing-and-tinting/">Brow wax and tint</a>
           <a href="/brazilian-wax/">Brazilian wax</a>
           <a href="/waxing/">Waxing</a>
+          <a href="/mens-waxing/">Waxing for men</a>
           <a href="/facials/">Facials</a>
           <a href="/microchanneling/">Microchanneling</a>
           <a href="/manicures-and-pedicures/">Manicures and pedicures</a>
@@ -461,7 +521,7 @@
         </details>
         <details>
           <summary>Do you wax men?</summary>
-          <div class="faq__a"><p>Yes. My menu includes back, chest and male anatomy Brazilian waxing.</p></div>
+          <div class="faq__a"><p>Yes. My menu includes back, chest and male anatomy Brazilian waxing. <a href="/mens-waxing/">See waxing for men.</a></p></div>
         </details>
         <details>
           <summary>Can I book more than one area?</summary>
@@ -574,8 +634,16 @@
       <h2>Microchanneling</h2>
       <div class="faq">
         <details>
+          <summary>Is microchanneling the same as microneedling?</summary>
+          <div class="faq__a"><p>Microchanneling is a form of microneedling. It makes very fine channels in the surface of the skin, which prompts the skin to renew itself.</p></div>
+        </details>
+        <details>
           <summary>What do you use microchanneling for?</summary>
           <div class="faq__a"><p>Fine lines, wrinkles, scarring and acne.</p></div>
+        </details>
+        <details>
+          <summary>How much is it?</summary>
+          <div class="faq__a"><p>$300 per appointment.</p></div>
         </details>
         <details>
           <summary>How long is the appointment?</summary>
@@ -662,8 +730,10 @@
       <a href="/korean-lash-lift/">Korean lash lift</a>
       <a href="/lash-lift-and-tint/">Lash lift and tint</a>
       <a href="/brow-lamination/">Brow lamination</a>
+      <a href="/eyebrow-waxing-and-tinting/">Brow wax and tint</a>
       <a href="/brazilian-wax/">Brazilian wax</a>
       <a href="/waxing/">Waxing</a>
+      <a href="/mens-waxing/">Waxing for men</a>
       <a href="/facials/">Facials</a>
       <a href="/microchanneling/">Microchanneling</a>
       <a href="/manicures-and-pedicures/">Manicures and pedicures</a>
@@ -681,6 +751,7 @@
       <p class="site-footer__label">Find me</p>
       <address>Inside The Beauty Collective<br>191 Main Street<br>Fredericton, NB E3A 1E1</address>
       <a href="https://www.instagram.com/torimed.spa/" target="_blank" rel="noopener">Instagram @torimed.spa</a>
+      <a href="https://maps.google.com/?cid=3807310203583079861" target="_blank" rel="noopener">Directions and Google reviews</a>
     </div>
   </div>
   <div class="wrap site-footer__base">

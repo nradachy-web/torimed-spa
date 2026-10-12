@@ -4,7 +4,7 @@ Site for Tori Kruse (ToriMed Spa), a medical aesthetician inside The Beauty Coll
 
 Every link is a real page with a clean address (no "#"): `/book/`, `/services/`, `/results/`, `/about/`, `/questions/`. When the thing a button points at is already on the page, the script scrolls to it without changing the address.
 
-A home page plus one page per service: Korean lash lift, lash lift and tint, brow lamination, Brazilian wax, waxing, facials, microchanneling, manicures and pedicures, and wedding and event makeup (`/makeup/`, an enquiry page with no price list).
+A home page plus one page per service: Korean lash lift, lash lift and tint, brow lamination, brow wax and tint, Brazilian wax, waxing, waxing for men, facials, microchanneling, manicures and pedicures, and wedding and event makeup (`/makeup/`, an enquiry page with no price list).
 
 ## How to change it
 
@@ -30,11 +30,24 @@ The copy is written as Tori, in the first person. Brand colours are black and pi
 - Client review: Emily M., Vagaro, April 20, 2026, quoted word for word. The second quote is from The Beauty Collective's introduction post.
 - Photos and logo: her Instagram (@torimed.spa). The hero portrait has extra blank wall added above her head; nothing else is altered.
 - Parking and the 24 hour cancellation policy: The Beauty Collective's Vagaro listing.
+- Her Google listing (place id, coordinates, listing link, in `GOOGLE` at the top of `src/build.py`): read from Google on October 11, 2026.
+- The brow wax and tint page and the waxing for men page (added October 11, 2026) only restate prices, appointment lengths and wording that were already on the site.
+- The one statement that is not Tori's: "microchanneling is a form of microneedling", which is how dermatologists describe it. It is there because most people search for microneedling.
 
 ## Still open
 
 1. Tori confirms prices, the cancellation policy and that her clients are fine with their photos on the site.
-2. Booking delivery: the Web3Forms access key is set in `SITE.formKey` in `assets/main.js` (added October 8, 2026). It has only been tested against a stand-in for the service, never with a real send, so one real submission still has to arrive in the inbox before the form is trusted. Web3Forms can report success for a dead key.
+2. Booking delivery: the Web3Forms access key is set in `SITE.formKey` in `assets/main.js`. Nick relayed on October 11, 2026 that Tori confirmed a website request reached her. Automated tests must still stand in for api.web3forms.com so they never send her a real email.
 3. Questions for Tori that would make the service pages richer: aftercare for lash lifts and brow lamination, how long a classic lash lift lasts, whether the Korean lash lift includes a tint, what her facials include, how many microchanneling sessions she recommends and the downtime, gel overlay and nail art prices, how long between waxes.
 4. Photos: the waxing, facial and microchanneling pages use her room and portrait because there are no service photos for them yet.
 5. Makeup page: the wedding photos come from her October 5, 2026 Instagram post and look like a professional photographer's work. Tori should confirm the photographer and the couple are fine with them on her website, and whether to add a photo credit. Her makeup prices, whether she travels, and whether she offers trials are not on the page because she has not published them.
+
+## Being found in search
+
+- Every page carries the business in its structured data (name, address, coordinates, Google listing), and each service page names its prices. `src/build.py` writes all of it from `src/content.py`.
+- `sitemap.xml` lists every page except the ad landing page and `/review/`.
+- `/review/` forwards to the Google review form for her listing. It is short enough to text to a client or print as a QR code.
+- `llms.txt` is a plain text summary of the business and prices for AI assistants, written by the build from the same facts.
+- The `.txt` file with a long random name at the root is the IndexNow key. After publishing new or changed pages, their addresses can be sent to Bing through IndexNow.
+- Not done here, because it needs Nick's Google account: add torimed.ca to Google Search Console and submit the sitemap.
+- Her opening hours and phone number are on her Google listing but not on the site. Add them here only when she confirms them, and keep both places identical.

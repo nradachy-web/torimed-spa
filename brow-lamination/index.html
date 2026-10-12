@@ -41,15 +41,61 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BeautySalon",
+      "@id": "https://torimed.ca/#business",
+      "name": "ToriMed Spa",
+      "url": "https://torimed.ca/",
+      "image": "https://torimed.ca/assets/img/og.jpg",
+      "logo": "https://torimed.ca/assets/img/logo-150.png",
+      "description": "Waxing, brow lamination, lash lifts, facials, microchanneling and gel nails by medical aesthetician Tori Kruse in Fredericton, New Brunswick.",
+      "priceRange": "$15 to $300",
+      "currenciesAccepted": "CAD",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "191 Main Street",
+        "addressLocality": "Fredericton",
+        "addressRegion": "NB",
+        "postalCode": "E3A 1E1",
+        "addressCountry": "CA"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 45.9778855,
+        "longitude": -66.651552
+      },
+      "hasMap": "https://maps.google.com/?cid=3807310203583079861",
+      "areaServed": {
+        "@type": "City",
+        "name": "Fredericton",
+        "containedInPlace": {
+          "@type": "AdministrativeArea",
+          "name": "New Brunswick"
+        }
+      },
+      "sameAs": [
+        "https://www.instagram.com/torimed.spa/",
+        "https://maps.google.com/?cid=3807310203583079861"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Tori Kruse",
+        "jobTitle": "Medical aesthetician"
+      }
+    },
+    {
       "@type": "Service",
       "@id": "https://torimed.ca/brow-lamination/#service",
       "name": "Brow lamination",
+      "serviceType": "Brow lamination",
       "description": "Fuller, lifted brows that stay put. Lamination, tint and wax for $95, lasting 4 to 6 weeks, with Tori Kruse at ToriMed Spa in Fredericton.",
       "url": "https://torimed.ca/brow-lamination/",
       "provider": {
         "@id": "https://torimed.ca/#business"
       },
-      "areaServed": "Fredericton, New Brunswick",
+      "areaServed": {
+        "@type": "City",
+        "name": "Fredericton"
+      },
       "offers": {
         "@type": "Offer",
         "price": "95",
@@ -68,6 +114,12 @@
         {
           "@type": "ListItem",
           "position": 2,
+          "name": "Services and prices",
+          "item": "https://torimed.ca/services/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
           "name": "Brow lamination",
           "item": "https://torimed.ca/brow-lamination/"
         }
@@ -154,8 +206,10 @@
           <a href="/korean-lash-lift/">Korean lash lift</a>
           <a href="/lash-lift-and-tint/">Lash lift and tint</a>
           <a href="/brow-lamination/" aria-current="page">Brow lamination</a>
+          <a href="/eyebrow-waxing-and-tinting/">Brow wax and tint</a>
           <a href="/brazilian-wax/">Brazilian wax</a>
           <a href="/waxing/">Waxing</a>
+          <a href="/mens-waxing/">Waxing for men</a>
           <a href="/facials/">Facials</a>
           <a href="/microchanneling/">Microchanneling</a>
           <a href="/manicures-and-pedicures/">Manicures and pedicures</a>
@@ -187,7 +241,7 @@
   <div class="wrap hero__in">
     <div class="hero__copy">
       <a class="crumb" href="/services/">All services</a>
-      <h1 class="hero__title">Brow lamination</h1>
+      <h1 class="hero__title">Brow lamination in Fredericton</h1>
       <p class="hero__lede">Fuller, lifted brows that stay put. Lamination, tint and wax in one visit, lasting 4 to 6 weeks.</p>
       <dl class="facts">
         <div><dt>Price</dt><dd>$95</dd></div>
@@ -278,7 +332,7 @@
         <div class="menu__intro">
           <h2 class="menu__title">Brow prices</h2>
           <p>Add what you want and send it as one booking request. You see the total before you send anything.</p>
-          <p class="menu__links"><span class="menu__links-label">Read more</span><a class="pill" href="/korean-lash-lift/">Korean lash lift</a><a class="pill" href="/lash-lift-and-tint/">Lash lift and tint</a></p>
+          <p class="menu__links"><span class="menu__links-label">Read more</span><a class="pill" href="/eyebrow-waxing-and-tinting/">Brow wax and tint</a><a class="pill" href="/korean-lash-lift/">Korean lash lift</a><a class="pill" href="/lash-lift-and-tint/">Lash lift and tint</a></p>
         </div>
         <div class="menu__cols">
           <div class="menu__group">
@@ -456,7 +510,7 @@
           Fredericton, NB E3A 1E1
         </address>
         <p class="side-card__note">Free parking.</p>
-        <a class="btn btn--ghost btn--block" href="https://www.google.com/maps/search/?api=1&amp;query=The+Beauty+Collective%2C+191+Main+Street%2C+Fredericton%2C+NB+E3A+1E1" target="_blank" rel="noopener">
+        <a class="btn btn--ghost btn--block" href="https://maps.google.com/?cid=3807310203583079861" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
           Get directions
         </a>
@@ -481,8 +535,10 @@
       <a href="/korean-lash-lift/">Korean lash lift</a>
       <a href="/lash-lift-and-tint/">Lash lift and tint</a>
       <a href="/brow-lamination/">Brow lamination</a>
+      <a href="/eyebrow-waxing-and-tinting/">Brow wax and tint</a>
       <a href="/brazilian-wax/">Brazilian wax</a>
       <a href="/waxing/">Waxing</a>
+      <a href="/mens-waxing/">Waxing for men</a>
       <a href="/facials/">Facials</a>
       <a href="/microchanneling/">Microchanneling</a>
       <a href="/manicures-and-pedicures/">Manicures and pedicures</a>
@@ -500,6 +556,7 @@
       <p class="site-footer__label">Find me</p>
       <address>Inside The Beauty Collective<br>191 Main Street<br>Fredericton, NB E3A 1E1</address>
       <a href="https://www.instagram.com/torimed.spa/" target="_blank" rel="noopener">Instagram @torimed.spa</a>
+      <a href="https://maps.google.com/?cid=3807310203583079861" target="_blank" rel="noopener">Directions and Google reviews</a>
     </div>
   </div>
   <div class="wrap site-footer__base">

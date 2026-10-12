@@ -13,15 +13,15 @@
   gtag('config', 'G-2T6P2NG4GZ');
   gtag('config', 'AW-18504296452');
 </script>
-<title>Microchanneling in Fredericton | ToriMed Spa</title>
-<meta name="description" content="Microchanneling with Tori Kruse, a medical aesthetician in Fredericton, for fine lines, wrinkles, scarring and acne. $300. See details and book.">
+<title>Microchanneling (microneedling) in Fredericton | ToriMed Spa</title>
+<meta name="description" content="Microchanneling, a form of microneedling, with Tori Kruse, a medical aesthetician in Fredericton. For fine lines, wrinkles, scarring and acne. $300.">
 <link rel="canonical" href="https://torimed.ca/microchanneling/">
 <meta name="theme-color" content="#0a0a0a">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ToriMed Spa">
-<meta property="og:title" content="Microchanneling in Fredericton | ToriMed Spa">
-<meta property="og:description" content="Microchanneling with Tori Kruse, a medical aesthetician in Fredericton, for fine lines, wrinkles, scarring and acne. $300. See details and book.">
+<meta property="og:title" content="Microchanneling (microneedling) in Fredericton | ToriMed Spa">
+<meta property="og:description" content="Microchanneling, a form of microneedling, with Tori Kruse, a medical aesthetician in Fredericton. For fine lines, wrinkles, scarring and acne. $300.">
 <meta property="og:url" content="https://torimed.ca/microchanneling/">
 <meta property="og:image" content="https://torimed.ca/assets/img/og-microchanneling.jpg">
 <meta property="og:image:width" content="1200">
@@ -41,15 +41,61 @@
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "BeautySalon",
+      "@id": "https://torimed.ca/#business",
+      "name": "ToriMed Spa",
+      "url": "https://torimed.ca/",
+      "image": "https://torimed.ca/assets/img/og.jpg",
+      "logo": "https://torimed.ca/assets/img/logo-150.png",
+      "description": "Waxing, brow lamination, lash lifts, facials, microchanneling and gel nails by medical aesthetician Tori Kruse in Fredericton, New Brunswick.",
+      "priceRange": "$15 to $300",
+      "currenciesAccepted": "CAD",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "191 Main Street",
+        "addressLocality": "Fredericton",
+        "addressRegion": "NB",
+        "postalCode": "E3A 1E1",
+        "addressCountry": "CA"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 45.9778855,
+        "longitude": -66.651552
+      },
+      "hasMap": "https://maps.google.com/?cid=3807310203583079861",
+      "areaServed": {
+        "@type": "City",
+        "name": "Fredericton",
+        "containedInPlace": {
+          "@type": "AdministrativeArea",
+          "name": "New Brunswick"
+        }
+      },
+      "sameAs": [
+        "https://www.instagram.com/torimed.spa/",
+        "https://maps.google.com/?cid=3807310203583079861"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Tori Kruse",
+        "jobTitle": "Medical aesthetician"
+      }
+    },
+    {
       "@type": "Service",
       "@id": "https://torimed.ca/microchanneling/#service",
       "name": "Microchanneling",
-      "description": "Microchanneling with Tori Kruse, a medical aesthetician in Fredericton, for fine lines, wrinkles, scarring and acne. $300. See details and book.",
+      "serviceType": "Microchanneling",
+      "description": "Microchanneling, a form of microneedling, with Tori Kruse, a medical aesthetician in Fredericton. For fine lines, wrinkles, scarring and acne. $300.",
       "url": "https://torimed.ca/microchanneling/",
       "provider": {
         "@id": "https://torimed.ca/#business"
       },
-      "areaServed": "Fredericton, New Brunswick",
+      "areaServed": {
+        "@type": "City",
+        "name": "Fredericton"
+      },
       "offers": {
         "@type": "Offer",
         "price": "300",
@@ -68,6 +114,12 @@
         {
           "@type": "ListItem",
           "position": 2,
+          "name": "Services and prices",
+          "item": "https://torimed.ca/services/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
           "name": "Microchanneling",
           "item": "https://torimed.ca/microchanneling/"
         }
@@ -78,10 +130,26 @@
       "mainEntity": [
         {
           "@type": "Question",
+          "name": "Is microchanneling the same as microneedling?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Microchanneling is a form of microneedling. It makes very fine channels in the surface of the skin, which prompts the skin to renew itself."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "What do you use microchanneling for?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Fine lines, wrinkles, scarring and acne."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much is it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "$300 per appointment."
           }
         },
         {
@@ -138,8 +206,10 @@
           <a href="/korean-lash-lift/">Korean lash lift</a>
           <a href="/lash-lift-and-tint/">Lash lift and tint</a>
           <a href="/brow-lamination/">Brow lamination</a>
+          <a href="/eyebrow-waxing-and-tinting/">Brow wax and tint</a>
           <a href="/brazilian-wax/">Brazilian wax</a>
           <a href="/waxing/">Waxing</a>
+          <a href="/mens-waxing/">Waxing for men</a>
           <a href="/facials/">Facials</a>
           <a href="/microchanneling/" aria-current="page">Microchanneling</a>
           <a href="/manicures-and-pedicures/">Manicures and pedicures</a>
@@ -171,7 +241,7 @@
   <div class="wrap hero__in">
     <div class="hero__copy">
       <a class="crumb" href="/services/">All services</a>
-      <h1 class="hero__title">Microchanneling</h1>
+      <h1 class="hero__title">Microchanneling in Fredericton</h1>
       <p class="hero__lede">A skin treatment I use for fine lines, wrinkles, scarring and acne.</p>
       <dl class="facts">
         <div><dt>Price</dt><dd>$300</dd></div>
@@ -190,6 +260,7 @@
     <div class="split__text">
       <h2>What microchanneling is</h2>
       <p>Microchanneling makes very fine channels in the surface of the skin, which prompts the skin to renew itself.</p>
+      <p>It is a form of microneedling. If you searched for microneedling in Fredericton, this is the treatment I offer.</p>
       <p>I use it to work on fine lines, wrinkles, scarring and acne.</p>
     </div>
     <aside class="card">
@@ -270,8 +341,16 @@
       <h2>Questions</h2>
       <div class="faq">
         <details>
+          <summary>Is microchanneling the same as microneedling?</summary>
+          <div class="faq__a"><p>Microchanneling is a form of microneedling. It makes very fine channels in the surface of the skin, which prompts the skin to renew itself.</p></div>
+        </details>
+        <details>
           <summary>What do you use microchanneling for?</summary>
           <div class="faq__a"><p>Fine lines, wrinkles, scarring and acne.</p></div>
+        </details>
+        <details>
+          <summary>How much is it?</summary>
+          <div class="faq__a"><p>$300 per appointment.</p></div>
         </details>
         <details>
           <summary>How long is the appointment?</summary>
@@ -389,7 +468,7 @@
           Fredericton, NB E3A 1E1
         </address>
         <p class="side-card__note">Free parking.</p>
-        <a class="btn btn--ghost btn--block" href="https://www.google.com/maps/search/?api=1&amp;query=The+Beauty+Collective%2C+191+Main+Street%2C+Fredericton%2C+NB+E3A+1E1" target="_blank" rel="noopener">
+        <a class="btn btn--ghost btn--block" href="https://maps.google.com/?cid=3807310203583079861" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
           Get directions
         </a>
@@ -414,8 +493,10 @@
       <a href="/korean-lash-lift/">Korean lash lift</a>
       <a href="/lash-lift-and-tint/">Lash lift and tint</a>
       <a href="/brow-lamination/">Brow lamination</a>
+      <a href="/eyebrow-waxing-and-tinting/">Brow wax and tint</a>
       <a href="/brazilian-wax/">Brazilian wax</a>
       <a href="/waxing/">Waxing</a>
+      <a href="/mens-waxing/">Waxing for men</a>
       <a href="/facials/">Facials</a>
       <a href="/microchanneling/">Microchanneling</a>
       <a href="/manicures-and-pedicures/">Manicures and pedicures</a>
@@ -433,6 +514,7 @@
       <p class="site-footer__label">Find me</p>
       <address>Inside The Beauty Collective<br>191 Main Street<br>Fredericton, NB E3A 1E1</address>
       <a href="https://www.instagram.com/torimed.spa/" target="_blank" rel="noopener">Instagram @torimed.spa</a>
+      <a href="https://maps.google.com/?cid=3807310203583079861" target="_blank" rel="noopener">Directions and Google reviews</a>
     </div>
   </div>
   <div class="wrap site-footer__base">

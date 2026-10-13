@@ -48,7 +48,7 @@ The copy is written as Tori, in the first person. Brand colours are black and pi
 
 - Every page carries the business in its structured data (name, address, coordinates, Google listing), and each service page names its prices. `src/build.py` writes all of it from `src/content.py`.
 - `sitemap.xml` lists every page except the ad landing page and `/review/`.
-- `/login/` is Tori's sign-in to her booking desk (`src/templates/login.html`), and where she chooses her PIN the first time. The page checks the PIN with the desk and only then hands over to it. It carries no Google tag, is kept out of search and the sitemap, and nothing links to it. A test of it must stand in for the desk, the same as for the booking form.
+- `/login/` is Tori's sign-in to her booking desk (`src/templates/login.html`). The page asks the desk who is here: while she has yet to choose a PIN it shows "Welcome, Tori" and asks for her mobile number and a new PIN, and after that it is a plain PIN sign-in. Keep the wording plain; she is not technical. Her mobile number is what proves it is her, so never publish it on the site. The page carries no Google tag, is kept out of search and the sitemap, and nothing links to it. A test of it must stand in for the desk, the same as for the booking form.
 - `/review/` forwards to the Google review form for her listing. It is short enough to text to a client or print as a QR code.
 - `llms.txt` is a plain text summary of the business and prices for AI assistants, written by the build from the same facts.
 - The `.txt` file with a long random name at the root is the IndexNow key. After publishing new or changed pages, their addresses can be sent to Bing through IndexNow.

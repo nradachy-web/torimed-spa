@@ -43,7 +43,10 @@
 }
 .door__form input:hover { border-color: rgba(251, 246, 245, 0.4); }
 .door__form input:focus-visible { outline: none; border-color: var(--blush); }
-.door__form input + label { margin-top: 10px; }
+.door__form input + label, .door__row + label { margin-top: 10px; }
+.door__row { display: grid; gap: 10px; }
+.door__form input[type="tel"] { font-size: 1.3125rem; letter-spacing: 0.04em; }
+.door__hint { margin-left: 6px; opacity: 0.75; }
 .door__form .btn { margin-top: 14px; }
 .door__form .btn[disabled] { opacity: 0.6; cursor: wait; }
 .door__error { color: #ffb4b4; }
@@ -61,30 +64,35 @@
     <span class="brand__name">ToriMed Spa</span>
   </a>
 
-  <section id="door-pin">
-    <h1 class="door__title">Sign in</h1>
-    <p class="door__lede">Your booking desk. Enter your PIN, and this phone stays signed in after that.</p>
-    <form class="door__form" id="pin-form" novalidate>
-      <label for="pin">Your PIN</label>
-      <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" required minlength="6" maxlength="8" enterkeyhint="go" autofocus aria-describedby="pin-error">
-      <p class="door__error" id="pin-error" role="alert" hidden></p>
-      <button class="btn btn--blush btn--block" type="submit" data-label="Open my desk" data-busy="Checking">Open my desk</button>
+  <section id="door-welcome" hidden>
+    <h1 class="door__title" id="welcome-title">Welcome</h1>
+    <p class="door__lede">This is your booking desk. Choose a PIN to open it. You will use the same PIN every time.</p>
+    <form class="door__form" id="welcome-form" novalidate>
+      <div class="door__row" id="phone-row">
+        <label for="phone">Your mobile number</label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24">
+      </div>
+      <label for="next">Choose a PIN <span class="door__hint">6 to 8 numbers</span></label>
+      <input id="next" name="next" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" maxlength="8" aria-describedby="welcome-error">
+      <label for="again">Type your PIN again</label>
+      <input id="again" name="again" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" maxlength="8" enterkeyhint="go">
+      <p class="door__error" id="welcome-error" role="alert" hidden></p>
+      <button class="btn btn--blush btn--block" type="submit" data-label="Open my desk" data-busy="One moment">Open my desk</button>
     </form>
-    <p class="door__fine">First time here? Enter the starter code you were sent and you will choose your own PIN.</p>
+    <p class="door__fine"><button class="door__back" type="button" id="to-pin">I already have a PIN</button></p>
   </section>
 
-  <section id="door-first" hidden>
-    <h1 class="door__title">Choose your PIN</h1>
-    <p class="door__lede"><span id="first-name">Hi.</span> Pick six to eight digits you will remember. This is the PIN you sign in with from now on.</p>
-    <form class="door__form" id="first-form" novalidate>
-      <label for="next">New PIN</label>
-      <input id="next" name="next" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" required minlength="6" maxlength="8" aria-describedby="first-error">
-      <label for="again">New PIN again</label>
-      <input id="again" name="again" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" required minlength="6" maxlength="8" enterkeyhint="go">
-      <p class="door__error" id="first-error" role="alert" hidden></p>
-      <button class="btn btn--blush btn--block" type="submit" data-label="Save my PIN and open my desk" data-busy="Saving">Save my PIN and open my desk</button>
+  <section id="door-pin" hidden>
+    <h1 class="door__title">Sign in</h1>
+    <p class="door__lede">Enter your PIN to open your booking desk.</p>
+    <form class="door__form" id="pin-form" novalidate>
+      <label for="pin">Your PIN</label>
+      <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" maxlength="8" enterkeyhint="go" aria-describedby="pin-error">
+      <p class="door__error" id="pin-error" role="alert" hidden></p>
+      <button class="btn btn--blush btn--block" type="submit" data-label="Open my desk" data-busy="One moment">Open my desk</button>
     </form>
-    <p class="door__fine"><button class="door__back" type="button" id="first-back">Start over</button></p>
+    <p class="door__fine">Forgot your PIN? Message Nick and he will reset it.</p>
+    <p class="door__fine" id="to-welcome-row" hidden><button class="door__back" type="button" id="to-welcome">First time here? Choose your PIN</button></p>
   </section>
 
   <noscript><p class="door__fine">This page needs JavaScript. You can also sign in at <a href="https://shop-desk-nine.vercel.app/login">the desk itself</a>.</p></noscript>
@@ -93,7 +101,10 @@
 <script>
 /* ToriMed Spa: signing in to the booking desk from torimed.ca/login.
    The desk lives at another address, so this page sends the PIN there, and a right PIN gets back
-   a one minute pass that the browser then carries to the desk. The desk only answers this site. */
+   a one minute pass that the browser then carries to the desk. The desk only answers this site.
+
+   The first time, the desk tells this page that Tori has not chosen a PIN yet, and the page
+   welcomes her: her mobile number shows it is her, and she chooses her PIN right here. */
 (function () {
   'use strict';
 
@@ -101,19 +112,23 @@
   var KEY = 'torimed-desk';
   var SAYS = {
     quiet: 'The desk did not answer. Check your connection and try again.',
-    used: 'That first-time link has already been used. Sign in with the PIN you chose.',
-    shape: 'The new PIN needs six to eight digits, numbers only.',
-    mismatch: 'The two new PINs did not match.'
+    used: 'That link has already been used. Sign in with your PIN.',
+    phone: 'Enter your mobile number with the area code.',
+    shape: 'Your PIN needs to be 6 to 8 numbers.',
+    mismatch: 'The two PINs are not the same. Type them both again.',
+    short: 'Your PIN is 6 to 8 numbers.'
   };
 
   var $ = function (id) { return document.getElementById(id); };
-  var stepPin = $('door-pin'), stepFirst = $('door-first');
-  var pinForm = $('pin-form'), firstForm = $('first-form');
-  var pin = $('pin'), next = $('next'), again = $('again');
-  // The starter code, kept from the first step so the second can prove it again.
-  var starter = '';
+  var stepWelcome = $('door-welcome'), stepPin = $('door-pin');
+  var welcomeForm = $('welcome-form'), pinForm = $('pin-form');
+  var phone = $('phone'), next = $('next'), again = $('again'), pin = $('pin');
 
-  // A first-time link carries the starter code after the #. Take it out of the address bar at once.
+  // Whether the desk is waiting for her to choose a PIN, and the name it gave.
+  var canWelcome = false, welcomeName = '';
+  // A starter code is the other proof of who she is: typed in as a PIN, or carried by a first-time
+  // link after the #. With one in hand the mobile number is not asked for.
+  var starter = '';
   var code = (location.hash.match(/^#start=(\d{6,8})$/) || [])[1] || '';
   if (location.hash || location.search) {
     try { history.replaceState(null, '', location.pathname); } catch (e) { /* the address just stays as typed */ }
@@ -126,9 +141,10 @@
     b.textContent = on ? b.getAttribute('data-busy') : b.getAttribute('data-label');
   }
 
-  function ask(body) {
+  function ask(body, wait) {
     var ctl = window.AbortController ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, wait || 15000);
+    var status = 0;
     return fetch(DESK + '/api/door', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -136,14 +152,14 @@
       cache: 'no-store',
       signal: ctl ? ctl.signal : undefined
     })
-      .then(function (r) { return r.json(); })
+      .then(function (r) { status = r.status; return r.json(); })
       .then(function (a) { return a && typeof a === 'object' ? a : { ok: false, error: SAYS.quiet }; })
-      .catch(function () { return { ok: false, error: SAYS.quiet }; })
-      .then(function (a) { clearTimeout(timer); return a; });
+      .catch(function () { status = 0; return { ok: false, error: SAYS.quiet }; })
+      .then(function (a) { clearTimeout(timer); a.status = status; return a; });
   }
 
   // Signed in. Remember this phone, then hand over to the desk. Replacing the page keeps the
-  // back button from landing on a used sign-in form.
+  // back button from landing on a used form.
   function enter(address) {
     try { localStorage.setItem(KEY, '1'); } catch (e) { /* fine without it */ }
     location.replace(address);
@@ -151,72 +167,88 @@
 
   function showPin(error) {
     starter = '';
-    firstForm.reset();
-    stepFirst.hidden = true;
+    welcomeForm.reset();
+    stepWelcome.hidden = true;
     stepPin.hidden = false;
+    $('to-welcome-row').hidden = !canWelcome;
     busy(pinForm, false);
     say($('pin-error'), error);
     pin.value = '';
     pin.focus();
   }
 
-  function showFirst(name, code) {
-    starter = code;
-    $('first-name').textContent = name ? 'Hi ' + name + '.' : 'Hi.';
+  function showWelcome(name, starterCode) {
+    starter = starterCode || '';
+    $('welcome-title').textContent = name ? 'Welcome, ' + name : 'Welcome';
+    $('phone-row').hidden = !!starter;
     stepPin.hidden = true;
-    stepFirst.hidden = false;
-    busy(firstForm, false);
-    say($('first-error'), '');
-    next.focus();
+    stepWelcome.hidden = false;
+    busy(welcomeForm, false);
+    say($('welcome-error'), '');
+    (starter ? next : phone).focus();
   }
+
+  function home() { if (canWelcome) showWelcome(welcomeName, ''); else showPin(''); }
 
   function tryPin(value, fromLink) {
     busy(pinForm, true);
     say($('pin-error'), '');
     ask({ pin: value }).then(function (a) {
       if (a.ok && a.go) return enter(a.go);
-      if (a.ok && a.first) return showFirst(a.first, value);
-      showPin(fromLink && a.error !== SAYS.quiet ? SAYS.used : a.error || SAYS.quiet);
+      if (a.ok && a.first) return showWelcome(a.first, value);
+      showPin(fromLink && a.status === 401 ? SAYS.used : a.error || SAYS.quiet);
     });
   }
 
   pinForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var value = pin.value.replace(/\D/g, '');
-    if (value.length < 6) { say($('pin-error'), 'A PIN is six to eight digits.'); pin.focus(); return; }
+    if (value.length < 6) { say($('pin-error'), SAYS.short); pin.focus(); return; }
     tryPin(value, false);
   });
 
-  firstForm.addEventListener('submit', function (e) {
+  welcomeForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var problem = !/^\d{6,8}$/.test(next.value) ? SAYS.shape : next.value !== again.value ? SAYS.mismatch : '';
-    if (problem) { say($('first-error'), problem); next.focus(); return; }
-    busy(firstForm, true);
-    say($('first-error'), '');
-    ask({ pin: starter, next: next.value, again: again.value }).then(function (a) {
+    var problem = !starter && phone.value.replace(/\D/g, '').length < 10 ? SAYS.phone
+      : !/^\d{6,8}$/.test(next.value) ? SAYS.shape
+      : next.value !== again.value ? SAYS.mismatch : '';
+    if (problem) {
+      say($('welcome-error'), problem);
+      (problem === SAYS.phone ? phone : next).focus();
+      return;
+    }
+    busy(welcomeForm, true);
+    say($('welcome-error'), '');
+    var body = starter ? { pin: starter, next: next.value, again: again.value } : { phone: phone.value, next: next.value, again: again.value };
+    ask(body).then(function (a) {
       if (a.ok && a.go) return enter(a.go);
-      // Still a good starter code, but that PIN cannot be used: stay here and say why.
-      if (a.first || a.error === SAYS.quiet) {
-        busy(firstForm, false);
-        say($('first-error'), a.error || SAYS.quiet);
-        next.value = ''; again.value = '';
-        next.focus();
-        return;
-      }
-      showPin(a.error || SAYS.quiet);
+      // Someone has already chosen, or the starter code is spent: only signing in is left.
+      if (a.closed || (starter && a.status === 401)) { canWelcome = false; return showPin(a.error || SAYS.quiet); }
+      busy(welcomeForm, false);
+      say($('welcome-error'), a.error || SAYS.quiet);
+      // A wrong mobile number keeps the PIN she typed out of the way and puts her back on the number.
+      next.value = ''; again.value = '';
+      (!starter && a.status === 401 ? phone : next).focus();
     });
   });
 
-  $('first-back').addEventListener('click', function () { showPin(''); });
+  $('to-pin').addEventListener('click', function () { showPin(''); });
+  $('to-welcome').addEventListener('click', function () { showWelcome(welcomeName, ''); });
 
-  // Coming back to this page with the back button: never leave it stuck on "Checking".
+  // Coming back to this page with the back button: never leave it stuck on "One moment".
   window.addEventListener('pageshow', function (e) {
     if (!e.persisted) return;
     document.documentElement.className = '';
-    showPin('');
+    home();
   });
 
-  if (code) tryPin(code, true);
+  if (code) { stepPin.hidden = false; tryPin(code, true); return; }
+  // Ask the desk who is here. If it does not answer quickly, the sign-in form is the safe thing to show.
+  ask({ hello: true }, 6000).then(function (a) {
+    canWelcome = !!(a.ok && a.welcome);
+    welcomeName = canWelcome ? String(a.welcome) : '';
+    home();
+  });
 })();
 </script>
 </body>

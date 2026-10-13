@@ -32,6 +32,7 @@ The copy is written as Tori, in the first person. Brand colours are black and pi
 - Parking and the 24 hour cancellation policy: The Beauty Collective's Vagaro listing.
 - Her Google listing (place id, coordinates, listing link, in `GOOGLE` at the top of `src/build.py`): read from Google on October 11, 2026.
 - The brow wax and tint page and the waxing for men page (added October 11, 2026) only restate prices, appointment lengths and wording that were already on the site.
+- Add-ons (October 13, 2026, from Nick): the Vajacial is a $25, 15 minute add-on to a Brazilian wax. Its name, length and description come from her Vagaro add-on screen, which still showed $20 that day. Gel polish removal ($20, 15 minutes) moved from the manicure list to a nail add-on. An add-on is any `CATALOG` entry with `"addon": True`; its price and time show with a plus sign.
 - The one statement that is not Tori's: "microchanneling is a form of microneedling", which is how dermatologists describe it. It is there because most people search for microneedling.
 
 ## Still open

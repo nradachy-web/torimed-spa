@@ -67,10 +67,11 @@ def picture(name, sizes, alt, lazy=True, indent="        "):
 def service_row(sid):
     s = CATALOG[sid]
     note = f'<span class="svc__note">{s["note"]}</span>' if s.get("note") else ""
-    time = f'<span class="svc__time">{minutes_label(s["min"])}</span>' if s.get("time", True) else ""
+    plus = "+" if s.get("addon") else ""
+    time = f'<span class="svc__time">{plus}{minutes_label(s["min"])}</span>' if s.get("time", True) else ""
     return (
         f'              <li class="svc" data-id="{sid}"><span class="svc__text"><span class="svc__name">{s["name"]}</span>{note}</span>'
-        f'<span class="svc__meta"><span class="svc__price">${s["price"]}</span>{time}</span></li>'
+        f'<span class="svc__meta"><span class="svc__price">{plus}${s["price"]}</span>{time}</span></li>'
     )
 
 

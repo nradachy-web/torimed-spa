@@ -47,6 +47,10 @@
 - Nose wax: $20, 15 min
 - Sideburn wax: $15, 15 min
 
+### Brazilian add-on
+
+- Vajacial: $25, 15 min
+
 ### Brows
 
 - Brow lamination: $95, 45 min
@@ -74,7 +78,6 @@
 - Classic manicure: $42, 45 min
 - Express gel manicure: $55, 1 h 15 min
 - Classic gel manicure: $62, 1 h 15 min
-- Gel polish removal: $20, 15 min
 
 ### Pedicures
 
@@ -82,6 +85,10 @@
 - Classic pedicure: $55, 1 h 30 min
 - Express gel pedicure: $55, 1 h 15 min
 - Classic gel pedicure: $65, 1 h 30 min
+
+### Nail add-on
+
+- Gel polish removal: $20, 15 min
 
 ## More
 

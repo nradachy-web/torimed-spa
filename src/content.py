@@ -17,9 +17,11 @@ WAX_PREP_REEL = "https://www.instagram.com/torimed.spa/reel/DdM8sfKRjlB/"
 KOREAN_REEL = "https://www.instagram.com/torimed.spa/reel/DcM_YIFMqN2/"
 
 # id: name, price (CAD), minutes to set aside, optional note. "time": False hides the time where the name already states it.
+# "addon": True marks an extra that goes on top of another service; its price and time show with a plus sign.
 CATALOG = {
     "brazilian": {"name": "Brazilian wax", "price": 70, "min": 30},
     "brazilian-male": {"name": "Male anatomy Brazilian", "price": 90, "min": 45},
+    "vajacial": {"name": "Vajacial", "price": 25, "min": 15, "addon": True, "note": "A rejuvenating jelly mask, perfect for soothing and hydration after a Brazilian wax."},
     "bikini": {"name": "Bikini wax", "price": 30, "min": 15, "note": "Bikini line."},
     "full-leg": {"name": "Full leg wax", "price": 72, "min": 30},
     "half-leg": {"name": "Half leg wax", "price": 35, "min": 15, "note": "Lower legs."},
@@ -47,7 +49,7 @@ CATALOG = {
     "mani-classic": {"name": "Classic manicure", "price": 42, "min": 45},
     "mani-gel-express": {"name": "Express gel manicure", "price": 55, "min": 75},
     "mani-gel-classic": {"name": "Classic gel manicure", "price": 62, "min": 75, "note": "Shaping, cuticle care, gel polish and a hand massage."},
-    "gel-removal": {"name": "Gel polish removal", "price": 20, "min": 15},
+    "gel-removal": {"name": "Gel polish removal", "price": 20, "min": 15, "addon": True},
     "pedi-express": {"name": "Express pedicure", "price": 45, "min": 75},
     "pedi-classic": {"name": "Classic pedicure", "price": 55, "min": 90},
     "pedi-gel-express": {"name": "Express gel pedicure", "price": 55, "min": 75},
@@ -56,15 +58,17 @@ CATALOG = {
 
 BODY_WAX = ["brazilian", "brazilian-male", "bikini", "full-leg", "half-leg", "underarm", "full-arm", "half-arm", "back", "chest"]
 FACE_WAX = ["full-face", "brow-wax", "lip", "chin", "nose", "sideburn"]
-MANICURES = ["mani-express", "mani-classic", "mani-gel-express", "mani-gel-classic", "gel-removal"]
+WAX_ADDONS = ["vajacial"]
+MANICURES = ["mani-express", "mani-classic", "mani-gel-express", "mani-gel-classic"]
 PEDICURES = ["pedi-express", "pedi-classic", "pedi-gel-express", "pedi-gel-classic"]
+NAIL_ADDONS = ["gel-removal"]
 
 # The four tabs on the home page menu.
 CATEGORIES = [
     {
         "id": "wax", "name": "Waxing", "img": "cat-wax", "desc": "My specialty. ", "from": "From $15",
         "intro": "Full body and face. Waxing is my specialty, and I keep every appointment fast.",
-        "groups": [("Body", BODY_WAX), ("Face", FACE_WAX)],
+        "groups": [("Body", BODY_WAX), ("Face", FACE_WAX), ("Brazilian add-on", WAX_ADDONS)],
         "links": [("Brazilian wax", "/brazilian-wax/"), ("Waxing for men", "/mens-waxing/"), ("All about waxing", "/waxing/")],
     },
     {
@@ -82,7 +86,7 @@ CATEGORIES = [
     {
         "id": "nails", "name": "Nails", "img": "cat-nails", "desc": "", "from": "Manicures from $35",
         "intro": "Gel and classic, hands and feet. For gel overlay or nail art, mention it in your request.",
-        "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES)],
+        "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES), ("Nail add-on", NAIL_ADDONS)],
         "links": [("Manicures and pedicures", "/manicures-and-pedicures/")],
     },
 ]
@@ -120,6 +124,8 @@ SHARED_FAQS = [
     ("Where are you located?", "I’m inside The Beauty Collective at 191 Main Street, Fredericton, NB E3A 1E1. Parking is free."),
     ("What if I need to cancel?", "Please give at least 24 hours’ notice to cancel or reschedule. Later cancellations may be charged 50% of the appointment price."),
 ]
+
+VAJACIAL_FAQ = ("What is a Vajacial?", "A rejuvenating jelly mask, perfect for soothing and hydration after a Brazilian wax. It is a $25 add-on and adds 15 minutes to your appointment.")
 
 ASK = {
     "type": "ask",
@@ -357,9 +363,11 @@ PAGES = [
             "paras": [
                 "I have been an aesthetician since 2021, and waxing is what I specialize in. I keep every appointment fast and efficient, and a Brazilian is booked for 30 minutes.",
                 "If this is your first one, that is completely fine. Message me on Instagram with any question before you book.",
+                "You can add a Vajacial to your Brazilian: a rejuvenating jelly mask, perfect for soothing and hydration after your wax. It is a $25 add-on and takes 15 minutes.",
             ],
             "aside": {"type": "checks", "heading": "Good to know", "items": [
                 "A 30 minute appointment",
+                "Vajacial add-on, $25",
                 "First-time clients welcome",
                 "Male anatomy Brazilian available",
                 "Free parking at 191 Main Street",
@@ -370,7 +378,7 @@ PAGES = [
         "prices": {
             "heading": "Brazilian and bikini prices",
             "intro": "Add what you want and send it as one booking request. You see the total before you send anything.",
-            "groups": [("Brazilian and bikini", ["brazilian", "brazilian-male", "bikini"]), ("Add to your visit", ["underarm", "full-leg", "half-leg"])],
+            "groups": [("Brazilian and bikini", ["brazilian", "brazilian-male", "bikini"]), ("Brazilian add-on", WAX_ADDONS), ("Add to your visit", ["underarm", "full-leg", "half-leg"])],
             "links": [("All waxing prices", "/waxing/")],
         },
         "faqs": [
@@ -378,6 +386,7 @@ PAGES = [
             ("How should I prepare?", "I made a short video on exactly this. <a href=\"" + WAX_PREP_REEL + "\" target=\"_blank\" rel=\"noopener\">Watch “How to prepare for your waxing appointment” on Instagram.</a>"),
             ("How long does it take?", "A Brazilian is a 30 minute appointment. A male anatomy Brazilian is 45 minutes."),
             ("Do you wax men?", "Yes. A male anatomy Brazilian is $90, and I also do back and chest waxing."),
+            VAJACIAL_FAQ,
         ],
     },
     {
@@ -409,7 +418,7 @@ PAGES = [
         "prices": {
             "heading": "Waxing prices",
             "intro": "Add each area you want and send them as one booking request. You see the total and the time before you send anything.",
-            "groups": [("Body", BODY_WAX), ("Face", FACE_WAX)],
+            "groups": [("Body", BODY_WAX), ("Face", FACE_WAX), ("Brazilian add-on", WAX_ADDONS)],
             "links": [("More about Brazilian waxing", "/brazilian-wax/"), ("Waxing for men", "/mens-waxing/"), ("Brow wax and tint", "/eyebrow-waxing-and-tinting/")],
         },
         "faqs": [
@@ -417,6 +426,7 @@ PAGES = [
             ("I have never been waxed before. Is that okay?", "Yes. First-time clients are welcome, and the review on this page is from a first wax. Message me on Instagram with any question before you book."),
             ("Do you wax men?", "Yes. My menu includes back, chest and male anatomy Brazilian waxing. <a href=\"/mens-waxing/\">See waxing for men.</a>"),
             ("Can I book more than one area?", "Yes. Add each area from the price list and send them as one request."),
+            VAJACIAL_FAQ,
         ],
     },
     {
@@ -572,14 +582,14 @@ PAGES = [
         "prices": {
             "heading": "Nail prices",
             "intro": "Add what you want and send it as one booking request. You see the total before you send anything.",
-            "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES)],
+            "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES), ("Nail add-on", NAIL_ADDONS)],
             "links": [],
         },
         "faqs": [
             ("What is a gel overlay, and is it for me?", "Gel overlay is a good choice if your nails keep breaking with gel polish alone, if your nails are not as strong as you would like, or if you just want more stability."),
             ("How much is gel overlay or nail art?", "Mention it in your booking request and I will confirm the price."),
             ("Can I book a manicure and a pedicure together?", "Yes. Add both and send them as one request."),
-            ("Do you remove gel polish?", "Yes. Gel polish removal is $20."),
+            ("Do you remove gel polish?", "Yes. Gel polish removal is a $20 add-on and adds 15 minutes to your appointment."),
         ],
     },
     {

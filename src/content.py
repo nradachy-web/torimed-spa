@@ -8,7 +8,7 @@ from her listings and her Instagram captions. Do not add a claim here that she h
 SITE = {
     "url": "https://torimed.ca",
     "name": "ToriMed Spa",
-    "asset_version": "12",
+    "asset_version": "13",
 }
 
 IG = "https://www.instagram.com/torimed.spa/"
@@ -17,11 +17,10 @@ WAX_PREP_REEL = "https://www.instagram.com/torimed.spa/reel/DdM8sfKRjlB/"
 KOREAN_REEL = "https://www.instagram.com/torimed.spa/reel/DcM_YIFMqN2/"
 
 # id: name, price (CAD), minutes to set aside, optional note. "time": False hides the time where the name already states it.
-# "addon": True marks an extra that goes on top of another service; its price and time show with a plus sign.
 CATALOG = {
     "brazilian": {"name": "Brazilian wax", "price": 70, "min": 30},
     "brazilian-male": {"name": "Male anatomy Brazilian", "price": 90, "min": 45},
-    "vajacial": {"name": "Vajacial", "price": 25, "min": 15, "addon": True, "note": "A rejuvenating jelly mask, perfect for soothing and hydration after a Brazilian wax."},
+    "vajacial": {"name": "Vajacial", "price": 25, "min": 15, "note": "A rejuvenating jelly mask, perfect for soothing and hydration after a Brazilian wax."},
     "bikini": {"name": "Bikini wax", "price": 30, "min": 15, "note": "Bikini line."},
     "full-leg": {"name": "Full leg wax", "price": 72, "min": 30},
     "half-leg": {"name": "Half leg wax", "price": 35, "min": 15, "note": "Lower legs."},
@@ -49,7 +48,7 @@ CATALOG = {
     "mani-classic": {"name": "Classic manicure", "price": 42, "min": 45},
     "mani-gel-express": {"name": "Express gel manicure", "price": 55, "min": 75},
     "mani-gel-classic": {"name": "Classic gel manicure", "price": 62, "min": 75, "note": "Shaping, cuticle care, gel polish and a hand massage."},
-    "gel-removal": {"name": "Gel polish removal", "price": 20, "min": 15, "addon": True},
+    "gel-removal": {"name": "Gel polish removal", "price": 20, "min": 15, "note": "For gel polish you already have on."},
     "pedi-express": {"name": "Express pedicure", "price": 45, "min": 75},
     "pedi-classic": {"name": "Classic pedicure", "price": 55, "min": 90},
     "pedi-gel-express": {"name": "Express gel pedicure", "price": 55, "min": 75},
@@ -58,17 +57,22 @@ CATALOG = {
 
 BODY_WAX = ["brazilian", "brazilian-male", "bikini", "full-leg", "half-leg", "underarm", "full-arm", "half-arm", "back", "chest"]
 FACE_WAX = ["full-face", "brow-wax", "lip", "chin", "nose", "sideburn"]
-WAX_ADDONS = ["vajacial"]
 MANICURES = ["mani-express", "mani-classic", "mani-gel-express", "mani-gel-classic"]
 PEDICURES = ["pedi-express", "pedi-classic", "pedi-gel-express", "pedi-gel-classic"]
-NAIL_ADDONS = ["gel-removal"]
+
+# Add-ons are not on the price lists. Each one is suggested while booking, as soon as a service it goes with is in the visit.
+# "to" is how the plain text summary (llms.txt) describes what it is added to.
+ADDONS = {
+    "vajacial": {"with": ["brazilian"], "to": "a Brazilian wax"},
+    "gel-removal": {"with": MANICURES + PEDICURES, "to": "a manicure or pedicure"},
+}
 
 # The four tabs on the home page menu.
 CATEGORIES = [
     {
         "id": "wax", "name": "Waxing", "img": "cat-wax", "desc": "My specialty. ", "from": "From $15",
         "intro": "Full body and face. Waxing is my specialty, and I keep every appointment fast.",
-        "groups": [("Body", BODY_WAX), ("Face", FACE_WAX), ("Brazilian add-on", WAX_ADDONS)],
+        "groups": [("Body", BODY_WAX), ("Face", FACE_WAX)],
         "links": [("Brazilian wax", "/brazilian-wax/"), ("Waxing for men", "/mens-waxing/"), ("All about waxing", "/waxing/")],
     },
     {
@@ -86,7 +90,7 @@ CATEGORIES = [
     {
         "id": "nails", "name": "Nails", "img": "cat-nails", "desc": "", "from": "Manicures from $35",
         "intro": "Gel and classic, hands and feet. For gel overlay or nail art, mention it in your request.",
-        "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES), ("Nail add-on", NAIL_ADDONS)],
+        "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES)],
         "links": [("Manicures and pedicures", "/manicures-and-pedicures/")],
     },
 ]
@@ -125,12 +129,38 @@ SHARED_FAQS = [
     ("What if I need to cancel?", "Please give at least 24 hours’ notice to cancel or reschedule. Later cancellations may be charged 50% of the appointment price."),
 ]
 
-VAJACIAL_FAQ = ("What is a Vajacial?", "A rejuvenating jelly mask, perfect for soothing and hydration after a Brazilian wax. It is a $25 add-on and adds 15 minutes to your appointment.")
+VAJACIAL_FAQ = ("What is a Vajacial?", "A rejuvenating jelly mask, perfect for soothing and hydration after a Brazilian wax. It is a $25 add-on and adds 15 minutes to your appointment. I offer it to you when you book a Brazilian.")
 
 ASK = {
     "type": "ask",
     "heading": "Not sure what to book?",
     "text": "Message me on Instagram and I will help you choose.",
+}
+
+# Before and after photos Tori sent on October 13, 2026. Some appear on more than one page.
+KOREAN_PAIR = {
+    "before": "ba-korean-before", "after": "ba-korean-after",
+    "alt_before": "Close view of a client’s natural lashes before a Korean lash lift",
+    "alt_after": "The same client’s lashes lifted and curled after a Korean lash lift",
+    "caption": "<strong>Korean lash lift.</strong> My client’s own lashes, lifted and curled. No extensions.",
+}
+BROW_LASH_PAIR = {
+    "before": "ba-browlash-before", "after": "ba-browlash-after",
+    "alt_before": "A client’s brow and lashes before a brow wax and tint and a Korean lash lift",
+    "alt_after": "The same client with a clean, tinted brow and lifted lashes",
+    "caption": "<strong>Brow wax and tint with a Korean lash lift.</strong> Before and after.",
+}
+BROW_LASH_PAIR_2 = {
+    "before": "ba-browlash2-before", "after": "ba-browlash2-after",
+    "alt_before": "A second client’s brow and lashes before a brow wax and tint and a Korean lash lift",
+    "alt_after": "The same client with a defined, tinted brow and lifted lashes",
+    "caption": "<strong>Brow wax and tint with a Korean lash lift.</strong> Tint for depth, wax for a clean shape.",
+}
+BROWLAM_PAIR = {
+    "before": "ba-browlam-before", "after": "ba-browlam-after",
+    "alt_before": "A client’s natural brow before lamination",
+    "alt_after": "The same brow after lamination, brushed up and defined",
+    "caption": "<strong>Brow lamination.</strong> Lamination, tint and wax in one visit.",
 }
 
 PAGES = [
@@ -160,13 +190,18 @@ PAGES = [
         },
         "results": {
             "heading": "Real results",
-            "intro": "One of my own clients, before and after the same appointment.",
-            "pairs": [{
-                "before": "ba-combo-before", "after": "ba-combo-after",
-                "alt_before": "Client’s brows and lashes before a Korean lash lift and brow lamination",
-                "alt_after": "The same client with lifted lashes and laminated brows",
-                "caption": "<strong>Korean lash lift with brow lamination.</strong> My favourite combination. The lift lasts about 8 weeks and the lamination 4 to 6.",
-            }],
+            "intro": "My own clients, before and after.",
+            "pairs": [
+                KOREAN_PAIR,
+                {
+                    "before": "ba-combo-before", "after": "ba-combo-after",
+                    "alt_before": "Client’s brows and lashes before a Korean lash lift and brow lamination",
+                    "alt_after": "The same client with lifted lashes and laminated brows",
+                    "caption": "<strong>Korean lash lift with brow lamination.</strong> My favourite combination. The lift lasts about 8 weeks and the lamination 4 to 6.",
+                },
+                BROW_LASH_PAIR,
+                BROW_LASH_PAIR_2,
+            ],
             "tiles": [],
             "more": ("Watch a Korean lash lift before and after on Instagram", KOREAN_REEL),
         },
@@ -270,10 +305,10 @@ PAGES = [
         "results": {
             "heading": "Real results",
             "intro": "Brow lamination on my own clients.",
-            "pairs": [],
+            "pairs": [BROWLAM_PAIR],
             "tiles": [
                 ("g-brows", "A client’s brow after lamination, brushed up and defined", ""),
-                ("g-brows-2", "Close view of a laminated brow with a clean waxed shape", ""),
+                ("g-brows-5", "Close view of a laminated brow with a clean waxed shape", ""),
                 ("g-brows-3", "A client’s laminated and tinted brow seen from the side", ""),
                 ("g-brows-4", "Close view of a full laminated brow", ""),
             ],
@@ -321,15 +356,10 @@ PAGES = [
             ]},
         },
         "results": {
-            "heading": "Brows on my own clients",
-            "intro": "These are brow laminations, which come with a tint and a wax.",
-            "pairs": [],
-            "tiles": [
-                ("g-brows", "A client’s brow after lamination, brushed up and defined", ""),
-                ("g-brows-2", "Close view of a laminated brow with a clean waxed shape", ""),
-                ("g-brows-3", "A client’s laminated and tinted brow seen from the side", ""),
-                ("g-brows-4", "Close view of a full laminated brow", ""),
-            ],
+            "heading": "Real results",
+            "intro": "My own clients, before and after a brow wax and tint with a Korean lash lift.",
+            "pairs": [BROW_LASH_PAIR, BROW_LASH_PAIR_2],
+            "tiles": [],
             "more": ("More brows on Instagram @torimed.spa", IG),
         },
         "quote": COLLECTIVE,
@@ -363,7 +393,7 @@ PAGES = [
             "paras": [
                 "I have been an aesthetician since 2021, and waxing is what I specialize in. I keep every appointment fast and efficient, and a Brazilian is booked for 30 minutes.",
                 "If this is your first one, that is completely fine. Message me on Instagram with any question before you book.",
-                "You can add a Vajacial to your Brazilian: a rejuvenating jelly mask, perfect for soothing and hydration after your wax. It is a $25 add-on and takes 15 minutes.",
+                "You can add a Vajacial to your Brazilian: a rejuvenating jelly mask, perfect for soothing and hydration after your wax. It is a $25 add-on and takes 15 minutes, and you can add it when you book.",
             ],
             "aside": {"type": "checks", "heading": "Good to know", "items": [
                 "A 30 minute appointment",
@@ -378,7 +408,7 @@ PAGES = [
         "prices": {
             "heading": "Brazilian and bikini prices",
             "intro": "Add what you want and send it as one booking request. You see the total before you send anything.",
-            "groups": [("Brazilian and bikini", ["brazilian", "brazilian-male", "bikini"]), ("Brazilian add-on", WAX_ADDONS), ("Add to your visit", ["underarm", "full-leg", "half-leg"])],
+            "groups": [("Brazilian and bikini", ["brazilian", "brazilian-male", "bikini"]), ("Add to your visit", ["underarm", "full-leg", "half-leg"])],
             "links": [("All waxing prices", "/waxing/")],
         },
         "faqs": [
@@ -418,7 +448,7 @@ PAGES = [
         "prices": {
             "heading": "Waxing prices",
             "intro": "Add each area you want and send them as one booking request. You see the total and the time before you send anything.",
-            "groups": [("Body", BODY_WAX), ("Face", FACE_WAX), ("Brazilian add-on", WAX_ADDONS)],
+            "groups": [("Body", BODY_WAX), ("Face", FACE_WAX)],
             "links": [("More about Brazilian waxing", "/brazilian-wax/"), ("Waxing for men", "/mens-waxing/"), ("Brow wax and tint", "/eyebrow-waxing-and-tinting/")],
         },
         "faqs": [
@@ -568,13 +598,13 @@ PAGES = [
         },
         "results": {
             "heading": "Recent sets",
-            "intro": "Gel overlay and nail art on my own clients.",
+            "intro": "Recent sets on my own clients.",
             "pairs": [],
             "tiles": [
                 ("g-cat-eye", "Blue cat eye gel nails with a marble look", "Cat eye gel overlay"),
-                ("cat-nails", "A second view of blue cat eye gel nails", "Cat eye gel overlay"),
                 ("g-nail-art", "Purple and black gel nails with hand-painted ghosts and stars", "Hand-painted nail art"),
-                ("g-nail-art-2", "Close view of two nails painted with stars, a moon and ghosts", "Hand-painted nail art"),
+                ("g-nails-shimmer", "A client’s hands with shimmering pink nails", "Pink shimmer"),
+                ("g-nails-pink", "A client’s hand with short, glossy pale pink nails", "Pale pink"),
             ],
             "more": ("More nails on Instagram @torimed.spa", IG),
         },
@@ -582,14 +612,14 @@ PAGES = [
         "prices": {
             "heading": "Nail prices",
             "intro": "Add what you want and send it as one booking request. You see the total before you send anything.",
-            "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES), ("Nail add-on", NAIL_ADDONS)],
+            "groups": [("Manicures", MANICURES), ("Pedicures", PEDICURES)],
             "links": [],
         },
         "faqs": [
             ("What is a gel overlay, and is it for me?", "Gel overlay is a good choice if your nails keep breaking with gel polish alone, if your nails are not as strong as you would like, or if you just want more stability."),
             ("How much is gel overlay or nail art?", "Mention it in your booking request and I will confirm the price."),
             ("Can I book a manicure and a pedicure together?", "Yes. Add both and send them as one request."),
-            ("Do you remove gel polish?", "Yes. Gel polish removal is a $20 add-on and adds 15 minutes to your appointment."),
+            ("Do you remove gel polish?", "Yes. Gel polish removal is a $20 add-on and adds 15 minutes to your appointment. I offer it to you when you book a manicure or pedicure."),
         ],
     },
     {
@@ -618,8 +648,25 @@ PAGES = [
                 "The look you have in mind",
             ]},
         },
+        "looks": {
+            "heading": "My makeup, up close",
+            "intro": "Makeup on my own clients. Eyes open and eyes closed, so you can see the detail.",
+            "pairs": [],
+            "lead": True,
+            "tiles": [
+                ("g-mu-bride", "A bride in her veil, smiling, framed by her bridesmaids’ sunflower and red rose bouquets", ""),
+                ("g-mu-1a", "Close view of a client’s finished makeup: soft brown eyeshadow, winged liner and a nude lip", ""),
+                ("g-mu-1b", "The same client looking down, showing her eyeshadow and winged liner", ""),
+                ("g-mu-2a", "Close view of a client’s finished makeup with bronze eyeshadow and a glossy peach lip", ""),
+                ("g-mu-2b", "The same client with her eyes closed, showing her eyeshadow and lashes", ""),
+                ("g-mu-3a", "Close view of a client’s finished makeup with smoky eyes and a glossy lip", ""),
+                ("g-mu-3b", "The same client with her eyes closed, showing her eyeshadow and winged liner", ""),
+                ("g-mu-4a", "Close view of a smiling client’s finished makeup with soft pink eyeshadow and a rosy lip", ""),
+                ("g-mu-4b", "The same client in profile, showing her blush and lashes", ""),
+            ],
+        },
         "results": {
-            "heading": "Recent work",
+            "heading": "A recent wedding",
             "intro": "A wedding from October 2026. I did the makeup for this bride and her bridal party, working alongside another artist.",
             "pairs": [],
             "wide": True,

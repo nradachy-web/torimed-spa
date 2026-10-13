@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
-from content import BOOKING_FAQS, CATALOG, CATEGORIES, COLLECTIVE, EMILY, HOME_FAQS, IG_DM, LANDINGS, PAGES, SHARED_FAQS, SITE  # noqa: E402
+from content import ADDONS, BOOKING_FAQS, CATALOG, CATEGORIES, COLLECTIVE, EMILY, HOME_FAQS, IG_DM, LANDINGS, PAGES, SHARED_FAQS, SITE  # noqa: E402
 
 IMAGES = json.load(open(os.path.join(HERE, "images.json")))
 GOOGLE = {
@@ -67,11 +67,10 @@ def picture(name, sizes, alt, lazy=True, indent="        "):
 def service_row(sid):
     s = CATALOG[sid]
     note = f'<span class="svc__note">{s["note"]}</span>' if s.get("note") else ""
-    plus = "+" if s.get("addon") else ""
-    time = f'<span class="svc__time">{plus}{minutes_label(s["min"])}</span>' if s.get("time", True) else ""
+    time = f'<span class="svc__time">{minutes_label(s["min"])}</span>' if s.get("time", True) else ""
     return (
         f'              <li class="svc" data-id="{sid}"><span class="svc__text"><span class="svc__name">{s["name"]}</span>{note}</span>'
-        f'<span class="svc__meta"><span class="svc__price">{plus}${s["price"]}</span>{time}</span></li>'
+        f'<span class="svc__meta"><span class="svc__price">${s["price"]}</span>{time}</span></li>'
     )
 
 
@@ -155,6 +154,10 @@ def book_form(menu_anchor, overrides=None):
 
 def catalog_json():
     slim = {k: {"name": v["name"], "price": v["price"], "min": v["min"]} for k, v in CATALOG.items()}
+    for k, a in ADDONS.items():  # the booking script offers an add-on once one of these services is in the visit
+        slim[k]["with"] = a["with"]
+        if CATALOG[k].get("note"):
+            slim[k]["note"] = CATALOG[k]["note"]
     return json.dumps(slim, ensure_ascii=False, separators=(",", ":"))
 
 
@@ -307,6 +310,8 @@ def service_about(p):
 
 
 def service_results(p):
+    if p.get("looks"):  # her own close-ups first; "See my work" in the hero lands on them
+        return results_block(p["looks"]) + "\n" + results_block(p["results"], "more-work")
     return results_block(p["results"]) if p["results"] else ""
 
 
@@ -328,14 +333,21 @@ def results_block(r, sid="results"):
     tiles = []
     wide = r.get("wide")
     sizes = "(min-width: 900px) 600px, 92vw" if wide else "(min-width: 900px) 290px, 44vw"
-    for img, alt, caption in r["tiles"]:
+    lead = r.get("lead")  # the first photo is shown large, beside the rest
+    for i, (img, alt, caption) in enumerate(r["tiles"]):
         cap = f"\n        <p>{caption}</p>" if caption else ""
-        tiles.append('      <li class="tile">\n' + picture(img, sizes, alt) + cap + "\n      </li>")
+        big = lead and i == 0
+        tiles.append(
+            f'      <li class="tile{" tile--lead" if big else ""}">\n'
+            + picture(img, "(min-width: 900px) 600px, 92vw" if big else sizes, alt) + cap + "\n      </li>"
+        )
     tiles_html = ""
     if tiles:
         cls = "tiles tiles--first" if not pairs else "tiles"
         if wide:
             cls += " tiles--wide"
+        if lead:
+            cls += " tiles--lead"
         tiles_html = f'    <ul class="{cls}">\n' + "\n".join(tiles) + "\n    </ul>\n"
     more = ""
     if r.get("more"):
@@ -606,27 +618,30 @@ def build_results():
     lash, korean, brows, nails, makeup = (
         BY_SLUG[k]["results"] for k in ("lash-lift-and-tint", "korean-lash-lift", "brow-lamination", "manicures-and-pedicures", "makeup")
     )
+    looks = BY_SLUG["makeup"]["looks"]
     groups = [
         ("lashes", {
             "heading": "Lash lifts", "intro": "My clients’ own lashes, before and after. No extensions.",
-            "pairs": [lash["pairs"][0], korean["pairs"][0]], "tiles": [],
+            "pairs": [lash["pairs"][0], korean["pairs"][0], korean["pairs"][1], korean["pairs"][2]], "tiles": [],
             "links": [("About the lash lift and tint", "/lash-lift-and-tint/"), ("About the Korean lash lift", "/korean-lash-lift/")],
         }),
         ("brows", {
-            "heading": "Brow lamination", "intro": "Lamination, tint and wax in one visit.",
-            "pairs": [], "tiles": brows["tiles"], "links": [("About brow lamination", "/brow-lamination/")],
+            "heading": "Brows", "intro": "Brow lamination, and brow wax and tint.",
+            "pairs": [brows["pairs"][0], korean["pairs"][3]], "tiles": brows["tiles"],
+            "links": [("About brow lamination", "/brow-lamination/"), ("About brow wax and tint", "/eyebrow-waxing-and-tinting/")],
         }),
         ("nails", {
-            "heading": "Nails", "intro": "Gel overlay and hand-painted nail art.",
+            "heading": "Nails", "intro": nails["intro"],
             "pairs": [], "tiles": nails["tiles"], "links": [("About manicures and pedicures", "/manicures-and-pedicures/")],
         }),
         ("makeup", {
-            "heading": "Wedding makeup", "intro": makeup["intro"],
-            "pairs": [], "wide": True, "tiles": makeup["tiles"][:2], "links": [("About wedding and event makeup", "/makeup/")],
+            "heading": "Makeup", "intro": "Makeup on my own clients.",
+            "pairs": [], "lead": True, "tiles": [looks["tiles"][i] for i in (0, 1, 3, 5, 7)],
+            "links": [("About wedding and event makeup", "/makeup/")],
         }),
     ]
     main = "\n".join(
-        [pagehead("My work", "Every photo here is one of my own clients, from my Instagram.")]
+        [pagehead("My work", "Every photo here is one of my own clients.")]
         + [results_block(r, sid) for sid, r in groups]
         + [cta_band()]
     )
@@ -720,6 +735,9 @@ def build_llms():
             lines.append("")
             lines += [f'- {CATALOG[i]["name"]}: ${CATALOG[i]["price"]}, {minutes_label(CATALOG[i]["min"])}' for i in ids]
             lines.append("")
+    lines += ["### Add-ons", ""]
+    lines += [f'- {CATALOG[k]["name"]}: ${CATALOG[k]["price"]}, {minutes_label(CATALOG[k]["min"])}, added to {a["to"]}' for k, a in ADDONS.items()]
+    lines.append("")
     lines += ["## More", "", f"- [Services and prices]({URL}/services/)", f"- [Results]({URL}/results/)", f"- [About Tori]({URL}/about/)", f"- [Questions]({URL}/questions/)", ""]
     return "\n".join(lines)
 

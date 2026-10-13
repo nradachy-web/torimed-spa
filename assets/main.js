@@ -123,11 +123,37 @@
     try { sessionStorage.setItem(VISIT_KEY, JSON.stringify(chosen)); } catch (e) { /* private mode: the visit just stays on this page */ }
   }
   function has(id) { return chosen.indexOf(id) !== -1; }
+
+  /* Add-ons are not on the price lists. One is offered as soon as a service it goes with is in the visit:
+     under that service on the price list, and again in the booking form. It leaves with that service. */
+  var ADDONS = Object.keys(CATALOG).filter(function (id) { return CATALOG[id].with; });
+  function goesWith(addon) { return chosen.filter(function (id) { return CATALOG[addon].with.indexOf(id) !== -1; }); }
+  function prune() {
+    chosen = chosen.filter(function (id) { return !CATALOG[id].with || goesWith(id).length; });
+  }
+  prune();
+
   function toggle(id) {
     var at = chosen.indexOf(id);
     if (at === -1) chosen.push(id); else chosen.splice(at, 1);
+    prune();
     save();
     render();
+  }
+
+  function addButton(id) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'svc__add';
+    btn.innerHTML = ICON_PLUS + ICON_CHECK;
+    btn.addEventListener('click', function () { toggle(id); });
+    return btn;
+  }
+  function span(cls, text) {
+    var el = document.createElement('span');
+    el.className = cls;
+    el.textContent = text;
+    return el;
   }
 
   var rows = [];
@@ -135,14 +161,34 @@
     var id = row.getAttribute('data-id');
     var s = CATALOG[id];
     if (!s) return;
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'svc__add';
-    btn.innerHTML = ICON_PLUS + ICON_CHECK;
-    btn.addEventListener('click', function () { toggle(id); });
+    var btn = addButton(id);
     row.appendChild(btn);
-    rows.push({ id: id, row: row, btn: btn });
+    rows.push({ id: id, row: row, btn: btn, offers: {} });
   });
+
+  // The row an add-on sits under: the service on this page that it was most recently made available by.
+  function anchor(addon) {
+    var onPage = goesWith(addon).filter(function (id) { return rows.some(function (r) { return r.id === id; }); });
+    return onPage[onPage.length - 1];
+  }
+  function offerRow(addon) {
+    var s = CATALOG[addon];
+    var li = document.createElement('li');
+    li.className = 'svc svc--offer';
+    var text = span('svc__text', '');
+    var tag = span('svc__tag', '');
+    text.appendChild(tag);
+    text.appendChild(span('svc__name', s.name));
+    if (s.note) text.appendChild(span('svc__note', s.note));
+    var meta = span('svc__meta', '');
+    meta.appendChild(span('svc__price', '+$' + s.price));
+    meta.appendChild(span('svc__time', '+' + minutesLabel(s.min)));
+    var btn = addButton(addon);
+    li.appendChild(text);
+    li.appendChild(meta);
+    li.appendChild(btn);
+    return { li: li, tag: tag, btn: btn };
+  }
 
   // Buttons such as "Book a Korean lash lift" put that service in the visit on the way to the form.
   $$('[data-add]').forEach(function (el) {
@@ -165,6 +211,7 @@
   var form = $('#book-form');
   var picked = $('#picked');
   var pickedSum = $('#picked-sum');
+  var suggest = $('#suggest');
   var generalField = $('#general-field');
   var pickLink = $('#pick-link');
 
@@ -180,6 +227,23 @@
       r.btn.setAttribute('aria-pressed', String(on));
       r.btn.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + name + (on ? ' from your visit' : ' to your visit'));
       r.row.classList.toggle('is-added', on);
+
+      ADDONS.forEach(function (addon) {
+        var o = r.offers[addon];
+        if (anchor(addon) !== r.id) {
+          if (o) { o.li.remove(); delete r.offers[addon]; }
+          return;
+        }
+        if (!o) {
+          o = r.offers[addon] = offerRow(addon);
+          r.row.insertAdjacentElement('afterend', o.li);
+        }
+        var added = has(addon), addonName = CATALOG[addon].name;
+        o.tag.textContent = added ? 'Add-on added' : 'Suggested add-on';
+        o.btn.setAttribute('aria-pressed', String(added));
+        o.btn.setAttribute('aria-label', (added ? 'Remove ' : 'Add ') + addonName + (added ? ' from your visit' : ' to your visit'));
+        o.li.classList.toggle('is-added', added);
+      });
     });
 
     var n = chosen.length, t = totals();
@@ -209,6 +273,31 @@
         picked.appendChild(li);
       });
       pickedSum.innerHTML = any ? '<strong>Total $' + t.price + '</strong>, about ' + minutesLabel(t.min) + '.' : '';
+
+      // Add-ons that go with this visit and are not in it yet.
+      var open = ADDONS.filter(function (addon) { return !has(addon) && goesWith(addon).length; });
+      suggest.hidden = !open.length;
+      suggest.innerHTML = '';
+      open.forEach(function (addon) {
+        var s = CATALOG[addon];
+        var card = document.createElement('div');
+        card.className = 'offer';
+        var text = span('offer__text', '');
+        text.appendChild(span('offer__tag', 'Suggested add-on'));
+        var name = span('offer__name', s.name);
+        name.appendChild(span('', '+$' + s.price + ', +' + minutesLabel(s.min)));
+        text.appendChild(name);
+        if (s.note) text.appendChild(span('offer__note', s.note));
+        var add = document.createElement('button');
+        add.type = 'button';
+        add.className = 'btn btn--blush btn--sm';
+        add.textContent = 'Add';
+        add.setAttribute('aria-label', 'Add ' + s.name + ' to your visit');
+        add.addEventListener('click', function () { toggle(addon); });
+        card.appendChild(text);
+        card.appendChild(add);
+        suggest.appendChild(card);
+      });
     }
     updateDock();
   }

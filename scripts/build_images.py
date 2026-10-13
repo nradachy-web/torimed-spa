@@ -1,14 +1,22 @@
 """Cut and encode the site photos from the originals in _source/ig.
 
-Run from anywhere:  python3 -I scripts/build_images.py <source_dir> <out_dir>
-Every photo is Tori's own, taken from her Instagram posts (see docs/SOURCES.md).
+Run from anywhere:  python3 -I scripts/build_images.py <source_dir> <out_dir> [name ...]
+With names after the two folders, only the cuts whose name starts with one of them are made
+(for example "g-mu" "ba-brow"), so adding photos does not re-encode the rest.
+Every photo is Tori's own: from her Instagram posts, or texted by her (see README.md).
 """
 import os
 import sys
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageOps
 
 src_dir, out_dir = sys.argv[1], sys.argv[2]
+only = sys.argv[3:]
 os.makedirs(out_dir, exist_ok=True)
+
+
+def wanted(name):
+    return not only or any(name.startswith(prefix) for prefix in only)
+
 
 # name: (source file, crop box as fractions x0 y0 x1 y1, output widths)
 JOBS = {
@@ -49,6 +57,42 @@ PIXEL_JOBS = {
 }
 
 
+# Photos Tori texted on October 13, 2026, kept beside the Instagram folder.
+texted_dir = os.path.join(src_dir, "..", "tori-2026-10-13")
+
+# name: (source file, centre x, centre y, width as a fraction of the photo, quarter turns, output widths).
+# Each is cut to 4:5 around the face or the hands, which also keeps the room behind out of the frame.
+FOCUS_JOBS = {
+    # Makeup. "a" is eyes open, "b" is the second view of the same client.
+    "g-mu-bride": ("c-IMG_1547.jpg", 0.50, 0.50, 1.00, 0, [1200, 760]),
+    "g-bride": ("c-IMG_1547.jpg", 0.50, 0.44, 0.62, 0, [640, 400]),
+    "g-mu-1a": ("a-IMG_1626.jpg", 0.50, 0.42, 0.62, 0, [640, 400]),
+    "g-mu-1b": ("a-IMG_1624.jpg", 0.47, 0.44, 0.66, 0, [640, 400]),
+    "g-mu-2a": ("c-IMG_1198.jpg", 0.56, 0.42, 0.56, 0, [640, 400]),
+    "g-mu-2b": ("c-IMG_1201.jpg", 0.50, 0.44, 0.62, 0, [640, 400]),
+    "g-mu-3a": ("c-IMG_1220.jpg", 0.50, 0.46, 0.62, 0, [640, 400]),
+    "g-mu-3b": ("c-IMG_1223.jpg", 0.50, 0.50, 0.60, 0, [640, 400]),
+    "g-mu-4a": ("c-IMG_1188.jpg", 0.59, 0.42, 0.52, 0, [640, 400]),
+    "g-mu-4b": ("c-IMG_1184.jpg", 0.52, 0.45, 0.37, 0, [640, 400]),
+    # The client was lying down, so this one is turned upright.
+    "g-brows-5": ("b-IMG_1560.jpg", 0.50, 0.50, 0.94, 3, [640, 400]),
+    "g-nails-shimmer": ("b-IMG_1562.jpg", 0.60, 0.50, 0.80, 0, [640, 400]),
+    "g-nails-pink": ("b-IMG_1564.jpg", 0.55, 0.50, 0.80, 0, [640, 400]),
+}
+
+# Her stacked before and after photos, split on the white divider and trimmed to 8:5.
+TEXTED_PIXEL_JOBS = {
+    "ba-browlash-before": ("b-IMG_1558.jpg", (8, 8, 2572, 1607), [900, 520]),
+    "ba-browlash-after": ("b-IMG_1558.jpg", (8, 1617, 2572, 3217), [900, 520]),
+    "ba-browlash2-before": ("b-IMG_1559.jpg", (15, 15, 2565, 1604), [900, 520]),
+    "ba-browlash2-after": ("b-IMG_1559.jpg", (15, 1620, 2565, 3210), [900, 520]),
+    "ba-korean-before": ("b-IMG_1561.jpg", (70, 0, 988, 574), [900, 520]),
+    "ba-korean-after": ("b-IMG_1561.jpg", (70, 588, 988, 1158), [900, 520]),
+    "ba-browlam-before": ("b-IMG_1563.jpg", (67, 0, 984, 574), [900, 520]),
+    "ba-browlam-after": ("b-IMG_1563.jpg", (67, 587, 984, 1164), [900, 520]),
+}
+
+
 def extend_top(im, frac):
     """Add headroom above the portrait by continuing its plain studio backdrop upward."""
     extra = round(im.height * frac)
@@ -77,25 +121,50 @@ def save_all(im, name, widths):
 
 
 for name, (f, box, widths) in JOBS.items():
+    if not wanted(name):
+        continue
     im = Image.open(os.path.join(src_dir, f)).convert("RGB")
     W, H = im.size
     im = im.crop((round(box[0] * W), round(box[1] * H), round(box[2] * W), round(box[3] * H)))
     save_all(im, name, widths)
 
 for name, (f, box, widths) in PIXEL_JOBS.items():
+    if not wanted(name):
+        continue
     im = Image.open(os.path.join(src_dir, f)).convert("RGB").crop(box)
     save_all(im, name, widths)
 
-# Hero portrait: the original crops tight to the top of her hair, so give it headroom for the header.
-portrait = Image.open(os.path.join(src_dir, "intro-0.jpg")).convert("RGB")
-save_all(extend_top(portrait, 0.12), "hero", [1160, 760])
-W, H = portrait.size
-save_all(extend_top(portrait.crop((round(0.10 * W), 0, round(0.90 * W), H)), 0.15), "hero-m", [800, 520])
+for name, (f, cx, cy, frac, turns, widths) in FOCUS_JOBS.items():
+    if not wanted(name):
+        continue
+    im = ImageOps.exif_transpose(Image.open(os.path.join(texted_dir, f))).convert("RGB")
+    if turns:
+        im = im.rotate(90 * turns, expand=True)
+    W, H = im.size
+    ch = min(frac * W * 1.25, H)
+    cw = ch / 1.25
+    x0 = min(max(cx * W - cw / 2, 0), W - cw)
+    y0 = min(max(cy * H - ch / 2, 0), H - ch)
+    save_all(im.crop((round(x0), round(y0), round(x0 + cw), round(y0 + ch))), name, widths)
 
-logo = Image.open(os.path.join(src_dir, "logo-150.jpg")).convert("RGB")
-logo.save(os.path.join(out_dir, "logo-150.webp"), quality=90, method=6)
-logo.save(os.path.join(out_dir, "logo-150.png"))
-print("logo ok")
+for name, (f, box, widths) in TEXTED_PIXEL_JOBS.items():
+    if not wanted(name):
+        continue
+    im = ImageOps.exif_transpose(Image.open(os.path.join(texted_dir, f))).convert("RGB").crop(box)
+    save_all(im, name, widths)
+
+# Hero portrait: the original crops tight to the top of her hair, so give it headroom for the header.
+if wanted("hero"):
+    portrait = Image.open(os.path.join(src_dir, "intro-0.jpg")).convert("RGB")
+    save_all(extend_top(portrait, 0.12), "hero", [1160, 760])
+    W, H = portrait.size
+    save_all(extend_top(portrait.crop((round(0.10 * W), 0, round(0.90 * W), H)), 0.15), "hero-m", [800, 520])
+
+if wanted("logo"):
+    logo = Image.open(os.path.join(src_dir, "logo-150.jpg")).convert("RGB")
+    logo.save(os.path.join(out_dir, "logo-150.webp"), quality=90, method=6)
+    logo.save(os.path.join(out_dir, "logo-150.png"))
+    print("logo ok")
 
 # Manifest of every cut (widths and the size of the largest), read by src/build.py.
 import json

@@ -2,13 +2,222 @@
 <html lang="en-CA">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>ToriMed Spa desk</title>
-<meta http-equiv="refresh" content="0; url=https://shop-desk-nine.vercel.app/login">
-<script>location.replace("https://shop-desk-nine.vercel.app/login");</script>
+<meta name="referrer" content="no-referrer">
+<title>Sign in | ToriMed Spa</title>
+<meta name="theme-color" content="#0a0a0a">
+<script>
+/* A phone that has signed in here before goes straight to the booking desk. If it has been
+   signed out since, the desk sends it back here with ?signin and the form shows as usual. */
+(function () {
+  try {
+    if (/[?&]signin\b/.test(location.search)) { localStorage.removeItem('torimed-desk'); return; }
+    if (!location.hash && localStorage.getItem('torimed-desk')) {
+      document.documentElement.className = 'is-going';
+      location.replace('https://shop-desk-nine.vercel.app/api/door?site=' + encodeURIComponent(location.hostname));
+    }
+  } catch (e) { /* no storage: the form simply shows */ }
+})();
+</script>
+<link rel="icon" href="/assets/img/logo-150.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/logo-150.png">
+<link rel="preload" href="/assets/fonts/tenor-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/styles.css?v=14">
+<style>
+/* Tori's sign-in to her booking desk. No tracking on this page, and nothing links to it. */
+.is-going body { visibility: hidden; }
+.door { min-height: 100svh; display: grid; background: var(--black); color: var(--on-dark); color-scheme: dark; }
+.door__in { width: 100%; max-width: 432px; margin: 0 auto; align-self: start; padding: calc(env(safe-area-inset-top) + clamp(28px, 8svh, 80px)) 24px 48px; }
+.door .brand { margin: 0 0 clamp(36px, 7svh, 60px); color: var(--on-dark); }
+.door__title { font-size: clamp(1.75rem, 1.3rem + 2vw, 2.25rem); }
+.door__lede { margin-top: 14px; color: var(--on-dark-2); }
+.door__form { margin-top: 30px; display: grid; gap: 10px; }
+.door__form label { font-size: 0.9375rem; color: var(--on-dark-2); }
+.door__form input {
+  width: 100%; min-height: 60px; padding: 10px 16px; border-radius: 8px;
+  border: 1.5px solid var(--line-dark); background: var(--coal-2); color: var(--on-dark);
+  font-size: 1.625rem; letter-spacing: 0.4em; text-align: center;
+  transition: border-color 0.2s var(--ease);
+}
+.door__form input:hover { border-color: rgba(251, 246, 245, 0.4); }
+.door__form input:focus-visible { outline: none; border-color: var(--blush); }
+.door__form input + label { margin-top: 10px; }
+.door__form .btn { margin-top: 14px; }
+.door__form .btn[disabled] { opacity: 0.6; cursor: wait; }
+.door__error { color: #ffb4b4; }
+.door__fine { margin-top: 26px; font-size: 0.9375rem; color: var(--on-dark-2); }
+.door__back { min-height: 44px; padding: 0; border: 0; background: none; color: var(--blush); text-decoration: underline; text-underline-offset: 4px; }
+.door__back:hover { color: var(--white); }
+.door :focus-visible { outline-color: var(--blush); }
+@media (min-width: 720px) and (min-height: 720px) { .door__in { align-self: center; padding-top: 48px; } }
+</style>
 </head>
-<body>
-<p><a href="https://shop-desk-nine.vercel.app/login">Open the ToriMed Spa booking desk</a></p>
+<body class="door">
+<main class="door__in">
+  <a class="brand" href="/" aria-label="ToriMed Spa home">
+    <img class="brand__mark" src="/assets/img/logo-150.webp" width="150" height="150" alt="">
+    <span class="brand__name">ToriMed Spa</span>
+  </a>
+
+  <section id="door-pin">
+    <h1 class="door__title">Sign in</h1>
+    <p class="door__lede">Your booking desk. Enter your PIN, and this phone stays signed in after that.</p>
+    <form class="door__form" id="pin-form" novalidate>
+      <label for="pin">Your PIN</label>
+      <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" required minlength="6" maxlength="8" enterkeyhint="go" autofocus aria-describedby="pin-error">
+      <p class="door__error" id="pin-error" role="alert" hidden></p>
+      <button class="btn btn--blush btn--block" type="submit" data-label="Open my desk" data-busy="Checking">Open my desk</button>
+    </form>
+    <p class="door__fine">First time here? Enter the starter code you were sent and you will choose your own PIN.</p>
+  </section>
+
+  <section id="door-first" hidden>
+    <h1 class="door__title">Choose your PIN</h1>
+    <p class="door__lede"><span id="first-name">Hi.</span> Pick six to eight digits you will remember. This is the PIN you sign in with from now on.</p>
+    <form class="door__form" id="first-form" novalidate>
+      <label for="next">New PIN</label>
+      <input id="next" name="next" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" required minlength="6" maxlength="8" aria-describedby="first-error">
+      <label for="again">New PIN again</label>
+      <input id="again" name="again" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" required minlength="6" maxlength="8" enterkeyhint="go">
+      <p class="door__error" id="first-error" role="alert" hidden></p>
+      <button class="btn btn--blush btn--block" type="submit" data-label="Save my PIN and open my desk" data-busy="Saving">Save my PIN and open my desk</button>
+    </form>
+    <p class="door__fine"><button class="door__back" type="button" id="first-back">Start over</button></p>
+  </section>
+
+  <noscript><p class="door__fine">This page needs JavaScript. You can also sign in at <a href="https://shop-desk-nine.vercel.app/login">the desk itself</a>.</p></noscript>
+</main>
+
+<script>
+/* ToriMed Spa: signing in to the booking desk from torimed.ca/login.
+   The desk lives at another address, so this page sends the PIN there, and a right PIN gets back
+   a one minute pass that the browser then carries to the desk. The desk only answers this site. */
+(function () {
+  'use strict';
+
+  var DESK = 'https://shop-desk-nine.vercel.app';
+  var KEY = 'torimed-desk';
+  var SAYS = {
+    quiet: 'The desk did not answer. Check your connection and try again.',
+    used: 'That first-time link has already been used. Sign in with the PIN you chose.',
+    shape: 'The new PIN needs six to eight digits, numbers only.',
+    mismatch: 'The two new PINs did not match.'
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var stepPin = $('door-pin'), stepFirst = $('door-first');
+  var pinForm = $('pin-form'), firstForm = $('first-form');
+  var pin = $('pin'), next = $('next'), again = $('again');
+  // The starter code, kept from the first step so the second can prove it again.
+  var starter = '';
+
+  // A first-time link carries the starter code after the #. Take it out of the address bar at once.
+  var code = (location.hash.match(/^#start=(\d{6,8})$/) || [])[1] || '';
+  if (location.hash || location.search) {
+    try { history.replaceState(null, '', location.pathname); } catch (e) { /* the address just stays as typed */ }
+  }
+
+  function say(el, text) { el.textContent = text || ''; el.hidden = !text; }
+  function busy(form, on) {
+    var b = form.querySelector('button[type="submit"]');
+    b.disabled = on;
+    b.textContent = on ? b.getAttribute('data-busy') : b.getAttribute('data-label');
+  }
+
+  function ask(body) {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
+    return fetch(DESK + '/api/door', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      cache: 'no-store',
+      signal: ctl ? ctl.signal : undefined
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (a) { return a && typeof a === 'object' ? a : { ok: false, error: SAYS.quiet }; })
+      .catch(function () { return { ok: false, error: SAYS.quiet }; })
+      .then(function (a) { clearTimeout(timer); return a; });
+  }
+
+  // Signed in. Remember this phone, then hand over to the desk. Replacing the page keeps the
+  // back button from landing on a used sign-in form.
+  function enter(address) {
+    try { localStorage.setItem(KEY, '1'); } catch (e) { /* fine without it */ }
+    location.replace(address);
+  }
+
+  function showPin(error) {
+    starter = '';
+    firstForm.reset();
+    stepFirst.hidden = true;
+    stepPin.hidden = false;
+    busy(pinForm, false);
+    say($('pin-error'), error);
+    pin.value = '';
+    pin.focus();
+  }
+
+  function showFirst(name, code) {
+    starter = code;
+    $('first-name').textContent = name ? 'Hi ' + name + '.' : 'Hi.';
+    stepPin.hidden = true;
+    stepFirst.hidden = false;
+    busy(firstForm, false);
+    say($('first-error'), '');
+    next.focus();
+  }
+
+  function tryPin(value, fromLink) {
+    busy(pinForm, true);
+    say($('pin-error'), '');
+    ask({ pin: value }).then(function (a) {
+      if (a.ok && a.go) return enter(a.go);
+      if (a.ok && a.first) return showFirst(a.first, value);
+      showPin(fromLink && a.error !== SAYS.quiet ? SAYS.used : a.error || SAYS.quiet);
+    });
+  }
+
+  pinForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var value = pin.value.replace(/\D/g, '');
+    if (value.length < 6) { say($('pin-error'), 'A PIN is six to eight digits.'); pin.focus(); return; }
+    tryPin(value, false);
+  });
+
+  firstForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var problem = !/^\d{6,8}$/.test(next.value) ? SAYS.shape : next.value !== again.value ? SAYS.mismatch : '';
+    if (problem) { say($('first-error'), problem); next.focus(); return; }
+    busy(firstForm, true);
+    say($('first-error'), '');
+    ask({ pin: starter, next: next.value, again: again.value }).then(function (a) {
+      if (a.ok && a.go) return enter(a.go);
+      // Still a good starter code, but that PIN cannot be used: stay here and say why.
+      if (a.first || a.error === SAYS.quiet) {
+        busy(firstForm, false);
+        say($('first-error'), a.error || SAYS.quiet);
+        next.value = ''; again.value = '';
+        next.focus();
+        return;
+      }
+      showPin(a.error || SAYS.quiet);
+    });
+  });
+
+  $('first-back').addEventListener('click', function () { showPin(''); });
+
+  // Coming back to this page with the back button: never leave it stuck on "Checking".
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    document.documentElement.className = '';
+    showPin('');
+  });
+
+  if (code) tryPin(code, true);
+})();
+</script>
 </body>
 </html>

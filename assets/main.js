@@ -4,8 +4,12 @@
 
   // Site settings. Booking requests are emailed through Web3Forms with this access key.
   // If the key is ever removed, the form falls back to copying the request for an Instagram message.
+  // Each request also goes to Tori's booking desk, which only accepts it from this site. The token
+  // says which shop it is for; it is meant to be public, like the access key.
   var SITE = {
     formKey: '44fecf0f-984e-4514-b0a5-0ec33384a58e',
+    deskUrl: 'https://shop-desk-nine.vercel.app/api/intake',
+    deskToken: 'kkRV3Cn_nLWrtCR72hV8tAKC',
     instagram: 'torimed.spa',
     // Google Ads conversions: a booking request that was delivered, and a tap on "message me on Instagram".
     adsBooking: 'AW-18504296452/HyDGCOiv25cdEITQxPdE',
@@ -407,8 +411,32 @@
       sendBtn.textContent = 'Sending';
       var t = totals();
       var services = chosen.map(function (id) { return CATALOG[id].name; });
-      if (data.service_type && !generalField.hidden) services.push(data.service_type);
-      fetch('https://api.web3forms.com/submit', {
+      var asking = data.service_type && !generalField.hidden ? data.service_type : '';
+      if (asking) services.push(asking);
+
+      // The request goes two ways at once: into Tori's booking desk, and to her inbox. Either one
+      // arriving counts as sent. The desk gets the ids of the services picked and works out the
+      // price and time from its own list. A desk that is slow to answer never holds up the visitor.
+      var toDesk = !SITE.deskUrl ? Promise.resolve(false) : Promise.race([
+        fetch(SITE.deskUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: SITE.deskToken,
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            services: chosen.slice(),
+            ask: asking,
+            day: data.preferred_day,
+            time: data.time_of_day,
+            notes: (chosen.length && asking ? 'Also asking about ' + asking + '. ' : '') + data.notes
+          })
+        }).then(function (r) { return r.json(); }).then(function (j) { return Boolean(j && j.ok); }),
+        new Promise(function (resolve) { setTimeout(function () { resolve(false); }, 10000); })
+      ]).catch(function () { return false; });
+
+      var toInbox = fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
@@ -426,8 +454,10 @@
           page: location.pathname,
           message: text
         })
-      }).then(function (r) { return r.json(); }).then(function (j) {
-        if (!j || !j.success) throw new Error('not sent');
+      }).then(function (r) { return r.json(); }).then(function (j) { return Boolean(j && j.success); }).catch(function () { return false; });
+
+      Promise.all([toDesk, toInbox]).then(function (landed) {
+        if (!landed[0] && !landed[1]) throw new Error('not sent');
         if (window.gtag) {
           window.gtag('event', 'generate_lead', { form_page: location.pathname });
           window.gtag('event', 'conversion', { send_to: SITE.adsBooking });

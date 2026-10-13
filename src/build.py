@@ -710,6 +710,20 @@ def build_review():
     )
 
 
+DESK = "https://shop-desk-nine.vercel.app/login"
+
+
+def build_login():
+    """torimed.ca/login/ is Tori's way in to her booking desk. It hands over to the desk's sign-in. Kept out of search."""
+    return (
+        '<!doctype html>\n<html lang="en-CA">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        '<meta name="robots" content="noindex, nofollow">\n<title>ToriMed Spa desk</title>\n'
+        f'<meta http-equiv="refresh" content="0; url={DESK}">\n'
+        f'<script>location.replace("{DESK}");</script>\n</head>\n<body>\n'
+        f'<p><a href="{DESK}">Open the ToriMed Spa booking desk</a></p>\n</body>\n</html>\n'
+    )
+
+
 def build_llms():
     """A plain text summary of the business, in the llms.txt convention, written from the same facts as the pages."""
     lines = [
@@ -765,6 +779,7 @@ def main():
     for lp in LANDINGS:  # ad landing pages stay out of the sitemap
         write(f'{lp["slug"]}/index.html', build_landing(lp))
     write("review/index.html", build_review())  # a redirect, also out of the sitemap
+    write("login/index.html", build_login())  # Tori's way in to her booking desk, out of the sitemap
     write("llms.txt", build_llms())
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     sitemap += "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n"

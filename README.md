@@ -39,7 +39,7 @@ The copy is written as Tori, in the first person. Brand colours are black and pi
 ## Still open
 
 1. Tori confirms prices, the cancellation policy and that her clients are fine with their photos on the site.
-2. Booking delivery: the Web3Forms access key is set in `SITE.formKey` in `assets/main.js`. Nick relayed on October 11, 2026 that Tori confirmed a website request reached her. Automated tests must still stand in for api.web3forms.com so they never send her a real email.
+2. Booking delivery: every request goes two ways at once, and either one arriving counts as sent. To Tori's inbox through Web3Forms (the access key is `SITE.formKey` in `assets/main.js`; Nick relayed on October 11, 2026 that Tori confirmed a website request reached her). And, since October 13, 2026, to her booking desk (`SITE.deskUrl` and `SITE.deskToken`; the desk is the Shop Desk app in `~/shop-desk`, see its `docs/DESK.md`). The desk gets the ids of the services picked and adds up the price and time from its own copy of the price list, so after a price or service changes here, update the desk's copy too. Automated tests must stand in for both api.web3forms.com and the desk, so they never send her a real email or save a made-up request.
 3. Questions for Tori that would make the service pages richer: aftercare for lash lifts and brow lamination, how long a classic lash lift lasts, whether the Korean lash lift includes a tint, what her facials include, how many microchanneling sessions she recommends and the downtime, gel overlay and nail art prices, how long between waxes.
 4. Photos: the waxing, facial and microchanneling pages use her room and portrait because there are no service photos for them yet.
 5. Makeup page: the wedding photos come from her October 5, 2026 Instagram post and look like a professional photographer's work. Tori should confirm the photographer and the couple are fine with them on her website, and whether to add a photo credit. Her makeup prices, whether she travels, and whether she offers trials are not on the page because she has not published them.
@@ -48,6 +48,7 @@ The copy is written as Tori, in the first person. Brand colours are black and pi
 
 - Every page carries the business in its structured data (name, address, coordinates, Google listing), and each service page names its prices. `src/build.py` writes all of it from `src/content.py`.
 - `sitemap.xml` lists every page except the ad landing page and `/review/`.
+- `/login/` forwards to the sign-in of Tori's booking desk. It is kept out of search and the sitemap.
 - `/review/` forwards to the Google review form for her listing. It is short enough to text to a client or print as a QR code.
 - `llms.txt` is a plain text summary of the business and prices for AI assistants, written by the build from the same facts.
 - The `.txt` file with a long random name at the root is the IndexNow key. After publishing new or changed pages, their addresses can be sent to Bing through IndexNow.

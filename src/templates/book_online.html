@@ -1,8 +1,9 @@
 <!-- Book online: live times from Tori's Square calendar (assets/booking.js) -->
 <section class="band band--coal book book--page live" id="book" data-desk="{{desk}}" data-ads="{{ads}}">
   <div class="wrap live__in">
+    <script type="application/json" id="live-square">{{square}}</script>
     <h1>Book your appointment</h1>
-    <p class="book__lede">Choose your services, then pick any open time. It goes straight into my calendar and you get a confirmation right away.</p>
+    <p class="book__lede">Choose your services, then pick any open time. It goes straight into my calendar, and you see your booking confirmed on the spot.</p>
 
     <div class="form live__steps">
       <section class="form__block live__step" aria-labelledby="live-s1">
@@ -49,6 +50,6 @@
       <div class="form__status live__done" id="live-status" role="status" aria-live="polite" hidden></div>
     </div>
 
-    <p class="live__alt">Prefer to ask first? <a href="/book/">Send me a booking request</a> or <a href="https://ig.me/m/torimed.spa" data-ig>message me on Instagram</a>.</p>
+    <p class="live__alt">Prefer to ask first? <a href="/book/request/">Send me a booking request</a> or <a href="https://ig.me/m/torimed.spa" data-ig>message me on Instagram</a>.</p>
   </div>
 </section>

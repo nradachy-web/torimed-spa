@@ -8,7 +8,7 @@ from her listings and her Instagram captions. Do not add a claim here that she h
 SITE = {
     "url": "https://torimed.ca",
     "name": "ToriMed Spa",
-    "asset_version": "15",
+    "asset_version": "16",
 }
 
 IG = "https://www.instagram.com/torimed.spa/"
@@ -119,8 +119,8 @@ HOME_FAQS = [
 
 # Questions about booking itself, used on the booking and questions pages.
 BOOKING_FAQS = [
-    ("How does booking work?", "Choose your services from the price list, pick a day and the time of day that suits you, and send your request. I reply to confirm your appointment time."),
-    ("Can I book more than one service?", "Yes. Add each one from the price list and send them as one request. You see the total and the time before you send anything."),
+    ("How does booking work?", "Choose your services, pick any open time from my calendar, and add your name and mobile number. Your appointment goes straight into my calendar. If you would rather ask first, you can send me a booking request instead."),
+    ("Can I book more than one service?", "Yes. Choose up to four for one visit and I show you the times that fit them back to back. You see the total and the time before you book."),
 ]
 
 # Appended to the questions on every service page.
@@ -754,4 +754,27 @@ LANDINGS = [
             "opening": "Hi Tori, I would like to book microchanneling.",
         },
     },
+]
+
+# The same services in Tori's Square catalogue, so a visit picked on the site arrives already chosen
+# in the online calendar (assets/booking.js). A pair books as Square's own combined service.
+SQUARE_IDS = {
+    "brazilian": "WD3FAQL7TCNJFWYYTYUBIGIN", "brazilian-male": "JIOU7AFOET3GSROMZCFSNGGT", "bikini": "TYCDHRM3QRRXCKMG7JYYPUWD",
+    "full-leg": "BKNG3FNPFJP42V2WGVYMQQM4", "half-leg": "3G3S63U54AFJ5RYLEI6Q2AFW", "underarm": "OJSDUF4KOOJXJ2M5DJCKULYR",
+    "full-arm": "XF6TIIKTN74MSZHPHWBEYXRT", "half-arm": "HMRGDM5M64YZPDRYJX4F5XYM", "back": "GFR6VT42OK3ZTO42ORIVIBQZ",
+    "chest": "JN7DFH7F3AMQA5WQ7AM4YLTX", "full-face": "2NG6D6BJJGG2FTIGNZKWEPJZ", "brow-wax": "C5S5VSUZVMTAJ3SS2FFZ46MD",
+    "lip": "Z3D3M3WMJBMQQHOBGKKGRDLL", "chin": "ZOW7YBW4LOOU5IFWC3OR3TBJ", "nose": "EWWWZVOSY6TUFMEXG7L4IWJE",
+    "sideburn": "76C2B5FQKJ2EE74HVQXZIXP6", "brow-lam": "25ANUWRYLNHBCRHIFIFD7ZMA", "brow-tint-wax": "ZBSH4DLN3MRWRU56YBSEZNA4",
+    "brow-lam-lash-lift": "TQR4VVLJ62V3EH47MNYZOETI", "lash-lift-tint": "Z76IDDXVJOWJO6WWXCVPCGFZ", "korean-lash-lift": "FEIAHUR56T35ACTH6ADJW5TJ",
+    "facial-30": "5LXCV6MOLRCXDST6CMT5ULUC", "facial-60": "73VW3AD2RXIXJCMY7J33VDWP", "dermaplaning": "TX2BV4ZNY5GAJT22NH4EQQX2",
+    "microchanneling": "4PFJS7R634JRBX7SCRM5SUF4", "mani-express": "NW2YDTFDQTE7T7C22XYU3HGH", "mani-classic": "JKH46UNS6UWXQXREZGS2NEDC",
+    "mani-gel-express": "QLPNCZXOBPO6W34TMVXLC3C5", "mani-gel-classic": "YD4HZB76OMSJ7PLPDT323QYX", "pedi-express": "563A7PZWJVTBP3DU47ZD6HYA",
+    "pedi-classic": "YMOHPNJE45UIU6KRRIGIEXBS", "pedi-gel-express": "KUW44GGONQZVZ5NHOPHL3GWR", "pedi-gel-classic": "RIXGRLDLBEDDBM2RGITCHOBP",
+}
+SQUARE_PAIRS = [
+    ("brazilian", "vajacial", "BYSGVWADOTUAGWNY2RFJTKIM"),
+    ("mani-gel-express", "gel-removal", "XONOJJ2OBPW66HRA5CZZTTCL"),
+    ("mani-gel-classic", "gel-removal", "26LGZ26QPE7PM277TX7XY6WT"),
+    ("pedi-gel-express", "gel-removal", "BRSSVCOHB4ENK7DZE7I75SPR"),
+    ("pedi-gel-classic", "gel-removal", "VIE75BHVQPVVSWV277FNTXNV"),
 ]

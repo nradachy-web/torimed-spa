@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
-from content import ADDONS, BOOKING_FAQS, CATALOG, CATEGORIES, COLLECTIVE, EMILY, HOME_FAQS, IG_DM, LANDINGS, PAGES, SHARED_FAQS, SITE  # noqa: E402
+from content import SQUARE_IDS, SQUARE_PAIRS, ADDONS, BOOKING_FAQS, CATALOG, CATEGORIES, COLLECTIVE, EMILY, HOME_FAQS, IG_DM, LANDINGS, PAGES, SHARED_FAQS, SITE  # noqa: E402
 
 IMAGES = json.load(open(os.path.join(HERE, "images.json")))
 GOOGLE = {
@@ -573,33 +573,48 @@ def simple_jsonld(name, path, faqs=None):
     return {"@context": "https://schema.org", "@graph": graph}
 
 
+LIVE_STEPS = [
+    ("Choose your services", "Tap everything you want in this visit. You see the time and the total as you go."),
+    ("Pick an open time", "Every time shown is free in my calendar right now."),
+    ("You are booked", "Add your name and mobile number and it goes straight into my calendar."),
+]
+
+
 def build_book():
+    """torimed.ca/book/: services, open times and booking straight from Tori's Square calendar.
+
+    Everything live comes from her booking desk (assets/booking.js), which only books while the
+    desk has booking open. The request form lives on at /book/request/ for anyone who would rather ask.
+    """
     faqs = BOOKING_FAQS + SHARED_FAQS
-    main = "\n".join([
-        book_form("", {"book_tag": "h1", "book_class": " book--page"}),
-        steps_and_questions(faqs, cta="See services and prices", link='href="/services/"'),
-    ])
+    live = fill(tpl("book_online.html"), desk=DESK, ads="AW-18504296452/HyDGCOiv25cdEITQxPdE",
+                square=json.dumps({"ids": SQUARE_IDS, "pairs": SQUARE_PAIRS}, separators=(",", ":")))
+    main = "\n".join([live, steps_and_questions(faqs, LIVE_STEPS, cta="See services and prices", link='href="/services/"')])
     meta = simple_meta(
         "/book/", "Book an appointment in Fredericton | ToriMed Spa",
-        "Send a booking request to Tori Kruse at ToriMed Spa in Fredericton. Choose your services, pick a day, and get your appointment time confirmed.",
+        "Book Tori Kruse at ToriMed Spa in Fredericton online. Choose your services, see her open times and book straight into her calendar.",
     )
-    return page(meta, main, "", simple_jsonld("Book an appointment", "/book/", faqs))
+    script = f'<script src="/assets/booking.js?v={V}" defer></script>'
+    return page(meta, main, script, simple_jsonld("Book an appointment", "/book/", faqs))
+
+
+def build_book_request():
+    """torimed.ca/book/request/: the request form, for anyone who would rather ask than book a time."""
+    main = book_form("", {"book_tag": "h1", "book_class": " book--page", "book_heading": "Send a booking request"})
+    meta = simple_meta(
+        "/book/request/", "Send a booking request | ToriMed Spa",
+        "Send Tori Kruse at ToriMed Spa a booking request and she will reply to confirm your time.",
+    )
+    return page(meta, main, "", simple_jsonld("Send a booking request", "/book/request/", []), noindex=True)
 
 
 def build_book_online():
-    """torimed.ca/book-online/: services, open times and booking straight from Tori's Square calendar.
-
-    Everything live comes from her booking desk (assets/booking.js). Until the switch from Vagaro
-    the page is kept out of search and the sitemap, nothing links to it, and the desk keeps
-    booking shut, so the page shows real open times but cannot book.
-    """
-    meta = simple_meta(
-        "/book-online/", "Book online | ToriMed Spa",
-        "Choose your services and book an open time with Tori Kruse at ToriMed Spa in Fredericton.",
+    """torimed.ca/book-online/ was the calendar's address while it was hidden. It now forwards to /book/."""
+    return (
+        '<!doctype html>\n<html lang="en-CA">\n<head>\n<meta charset="utf-8">\n<meta name="robots" content="noindex">\n'
+        f'<title>Book an appointment | ToriMed Spa</title>\n<meta http-equiv="refresh" content="0; url=/book/">\n<link rel="canonical" href="{URL}/book/">\n'
+        '<script>location.replace("/book/" + location.search);</script>\n</head>\n<body>\n<p><a href="/book/">Book an appointment</a></p>\n</body>\n</html>\n'
     )
-    main = fill(tpl("book_online.html"), desk=DESK, ads="AW-18504296452/HyDGCOiv25cdEITQxPdE")
-    script = f'<script src="/assets/booking.js?v={V}" defer></script>'
-    return page(meta, main, script, simple_jsonld("Book online", "/book-online/", []), noindex=True)
 
 
 def build_services():
@@ -793,7 +808,8 @@ def main():
     for lp in LANDINGS:  # ad landing pages stay out of the sitemap
         write(f'{lp["slug"]}/index.html', build_landing(lp))
     write("review/index.html", build_review())  # a redirect, also out of the sitemap
-    write("book-online/index.html", build_book_online())  # live Square booking, out of the sitemap until the switch
+    write("book/request/index.html", build_book_request())  # the request form, out of the sitemap
+    write("book-online/index.html", build_book_online())  # old address of the calendar, forwards to /book/
     write("login/index.html", build_login())  # Tori's sign-in to her booking desk, out of the sitemap
     write("llms.txt", build_llms())
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

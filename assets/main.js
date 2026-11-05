@@ -311,7 +311,7 @@
 
   /* The dock shows after the top of the page and steps aside while the booking form is on screen. */
   var top = $('.hero') || $('.pagehead');
-  var book = $('#book');
+  var book = $('#book') || $('#request');
   var pastTop = false, atBook = false;
   function updateDock() {
     var show = pastTop && !atBook;

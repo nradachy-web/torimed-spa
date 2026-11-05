@@ -14,14 +14,14 @@
   gtag('config', 'AW-18504296452');
 </script>
 <title>Book an appointment in Fredericton | ToriMed Spa</title>
-<meta name="description" content="Send a booking request to Tori Kruse at ToriMed Spa in Fredericton. Choose your services, pick a day, and get your appointment time confirmed.">
+<meta name="description" content="Book Tori Kruse at ToriMed Spa in Fredericton online. Choose your services, see her open times and book straight into her calendar.">
 <link rel="canonical" href="https://torimed.ca/book/">
 <meta name="theme-color" content="#0a0a0a">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ToriMed Spa">
 <meta property="og:title" content="Book an appointment in Fredericton | ToriMed Spa">
-<meta property="og:description" content="Send a booking request to Tori Kruse at ToriMed Spa in Fredericton. Choose your services, pick a day, and get your appointment time confirmed.">
+<meta property="og:description" content="Book Tori Kruse at ToriMed Spa in Fredericton online. Choose your services, see her open times and book straight into her calendar.">
 <meta property="og:url" content="https://torimed.ca/book/">
 <meta property="og:image" content="https://torimed.ca/assets/img/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -33,8 +33,8 @@
 
 <link rel="preload" href="/assets/fonts/tenor-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
-
-<link rel="stylesheet" href="/assets/styles.css?v=15">
+<script src="/assets/booking.js?v=16" defer></script>
+<link rel="stylesheet" href="/assets/styles.css?v=16">
 
 <script type="application/ld+json">
 {
@@ -116,7 +116,7 @@
           "name": "How does booking work?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Choose your services from the price list, pick a day and the time of day that suits you, and send your request. I reply to confirm your appointment time."
+            "text": "Choose your services, pick any open time from my calendar, and add your name and mobile number. Your appointment goes straight into my calendar. If you would rather ask first, you can send me a booking request instead."
           }
         },
         {
@@ -124,7 +124,7 @@
           "name": "Can I book more than one service?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. Add each one from the price list and send them as one request. You see the total and the time before you send anything."
+            "text": "Yes. Choose up to four for one visit and I show you the times that fit them back to back. You see the total and the time before you book."
           }
         },
         {
@@ -190,108 +190,59 @@
 
 <main id="main">
 
-<!-- Book -->
-<section class="band band--coal book book--page" id="book">
-  <div class="wrap book__in">
-    <div class="book__main">
-      <h1>Book an appointment</h1>
-      <p class="book__lede">Send your request and I will confirm your time.</p>
+<!-- Book online: live times from Tori's Square calendar (assets/booking.js) -->
+<section class="band band--coal book book--page live" id="book" data-desk="https://shop-desk-nine.vercel.app" data-ads="AW-18504296452/HyDGCOiv25cdEITQxPdE">
+  <div class="wrap live__in">
+    <script type="application/json" id="live-square">{"ids":{"brazilian":"WD3FAQL7TCNJFWYYTYUBIGIN","brazilian-male":"JIOU7AFOET3GSROMZCFSNGGT","bikini":"TYCDHRM3QRRXCKMG7JYYPUWD","full-leg":"BKNG3FNPFJP42V2WGVYMQQM4","half-leg":"3G3S63U54AFJ5RYLEI6Q2AFW","underarm":"OJSDUF4KOOJXJ2M5DJCKULYR","full-arm":"XF6TIIKTN74MSZHPHWBEYXRT","half-arm":"HMRGDM5M64YZPDRYJX4F5XYM","back":"GFR6VT42OK3ZTO42ORIVIBQZ","chest":"JN7DFH7F3AMQA5WQ7AM4YLTX","full-face":"2NG6D6BJJGG2FTIGNZKWEPJZ","brow-wax":"C5S5VSUZVMTAJ3SS2FFZ46MD","lip":"Z3D3M3WMJBMQQHOBGKKGRDLL","chin":"ZOW7YBW4LOOU5IFWC3OR3TBJ","nose":"EWWWZVOSY6TUFMEXG7L4IWJE","sideburn":"76C2B5FQKJ2EE74HVQXZIXP6","brow-lam":"25ANUWRYLNHBCRHIFIFD7ZMA","brow-tint-wax":"ZBSH4DLN3MRWRU56YBSEZNA4","brow-lam-lash-lift":"TQR4VVLJ62V3EH47MNYZOETI","lash-lift-tint":"Z76IDDXVJOWJO6WWXCVPCGFZ","korean-lash-lift":"FEIAHUR56T35ACTH6ADJW5TJ","facial-30":"5LXCV6MOLRCXDST6CMT5ULUC","facial-60":"73VW3AD2RXIXJCMY7J33VDWP","dermaplaning":"TX2BV4ZNY5GAJT22NH4EQQX2","microchanneling":"4PFJS7R634JRBX7SCRM5SUF4","mani-express":"NW2YDTFDQTE7T7C22XYU3HGH","mani-classic":"JKH46UNS6UWXQXREZGS2NEDC","mani-gel-express":"QLPNCZXOBPO6W34TMVXLC3C5","mani-gel-classic":"YD4HZB76OMSJ7PLPDT323QYX","pedi-express":"563A7PZWJVTBP3DU47ZD6HYA","pedi-classic":"YMOHPNJE45UIU6KRRIGIEXBS","pedi-gel-express":"KUW44GGONQZVZ5NHOPHL3GWR","pedi-gel-classic":"RIXGRLDLBEDDBM2RGITCHOBP"},"pairs":[["brazilian","vajacial","BYSGVWADOTUAGWNY2RFJTKIM"],["mani-gel-express","gel-removal","XONOJJ2OBPW66HRA5CZZTTCL"],["mani-gel-classic","gel-removal","26LGZ26QPE7PM277TX7XY6WT"],["pedi-gel-express","gel-removal","BRSSVCOHB4ENK7DZE7I75SPR"],["pedi-gel-classic","gel-removal","VIE75BHVQPVVSWV277FNTXNV"]]}</script>
+    <h1>Book your appointment</h1>
+    <p class="book__lede">Choose your services, then pick any open time. It goes straight into my calendar, and you see your booking confirmed on the spot.</p>
 
-      <form class="form" id="book-form" action="/book/" method="post" data-day-label="Preferred day" data-opening="Hi Tori, I would like to book an appointment." data-sent="I will reply to confirm your appointment time.">
-        <fieldset class="form__block">
-          <legend>What are you booking?</legend>
-          <ul class="picked" id="picked" hidden></ul>
-          <div class="suggest" id="suggest" hidden></div>
-          <p class="picked__sum" id="picked-sum" hidden></p>
-          <div class="form__field" id="general-field">
-            <label for="f-general" class="sr">Service</label>
-            <select id="f-general" name="service_type">
-              <option value="">Choose a service type</option>
-              <option>Waxing</option>
-              <option>Brows and lashes</option>
-              <option>Skin</option>
-              <option>Nails</option>
-              <option>Wedding makeup</option>
-              <option>Event makeup</option>
-              <option>Not sure yet</option>
-            </select>
-          </div>
-          <a class="form__link" href="/services/" data-scroll="" id="pick-link">Pick exact services from the menu</a>
-        </fieldset>
+    <div class="form live__steps">
+      <section class="form__block live__step" aria-labelledby="live-s1">
+        <h2 class="live__h" id="live-s1"><span class="live__n">1</span> Choose your services</h2>
+        <p class="live__hint" id="live-svc-hint">Loading my menu...</p>
+        <div class="live__groups" id="live-groups" hidden></div>
+        <p class="live__sum" id="live-sum" hidden></p>
+      </section>
 
-        <fieldset class="form__block">
-          <legend>When suits you?</legend>
-          <div class="form__row">
-            <div class="form__field">
-              <label for="f-day">Preferred day</label>
-              <input type="date" id="f-day" name="preferred_day" required>
-            </div>
-            <div class="form__field">
-              <span class="form__label" id="tod-label">Time of day</span>
-              <div class="seg" role="radiogroup" aria-labelledby="tod-label">
-                <label><input type="radio" name="time_of_day" value="Morning" required><span>Morning</span></label>
-                <label><input type="radio" name="time_of_day" value="Afternoon"><span>Afternoon</span></label>
-                <label><input type="radio" name="time_of_day" value="Evening"><span>Evening</span></label>
-              </div>
-            </div>
-          </div>
-        </fieldset>
+      <section class="form__block live__step" aria-labelledby="live-s2" id="live-when" data-locked>
+        <h2 class="live__h" id="live-s2"><span class="live__n">2</span> Pick a day and time</h2>
+        <p class="live__hint" id="live-time-hint">Choose a service first and I will show you my open times.</p>
+        <div class="live__days" id="live-days" role="radiogroup" aria-label="Day" hidden></div>
+        <div class="live__times" id="live-times" role="radiogroup" aria-label="Start time" hidden></div>
+      </section>
 
-        <fieldset class="form__block">
-          <legend>Your details</legend>
-          <div class="form__row">
-            <div class="form__field">
-              <label for="f-name">Name</label>
-              <input type="text" id="f-name" name="name" autocomplete="name" required>
-            </div>
-            <div class="form__field">
-              <label for="f-phone">Mobile number</label>
-              <input type="tel" id="f-phone" name="phone" autocomplete="tel" inputmode="tel" required>
-            </div>
+      <form class="form__block live__step" aria-labelledby="live-s3" id="live-form" data-locked novalidate>
+        <h2 class="live__h" id="live-s3"><span class="live__n">3</span> Your details</h2>
+        <div class="form__row">
+          <div class="form__field">
+            <label for="l-name">Name</label>
+            <input type="text" id="l-name" name="name" autocomplete="name" required>
           </div>
           <div class="form__field">
-            <label for="f-email">Email <span class="form__opt">optional</span></label>
-            <input type="email" id="f-email" name="email" autocomplete="email">
+            <label for="l-phone">Mobile number</label>
+            <input type="tel" id="l-phone" name="phone" autocomplete="tel" inputmode="tel" required>
           </div>
-          <div class="form__field">
-            <label for="f-notes">Anything I should know? <span class="form__opt">optional</span></label>
-            <textarea id="f-notes" name="notes" rows="3"></textarea>
-          </div>
-          <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-        </fieldset>
-
-        <div class="form__send">
-          <button class="btn btn--blush btn--lg" type="submit" id="send-btn">Send booking request</button>
-          <p class="form__fine" id="send-note">Your details come to me only, to arrange your appointment.</p>
         </div>
-        <div class="form__status" id="form-status" role="status" aria-live="polite" hidden></div>
+        <div class="form__field">
+          <label for="l-email">Email <span class="form__opt">for your confirmation</span></label>
+          <input type="email" id="l-email" name="email" autocomplete="email">
+        </div>
+        <div class="form__field">
+          <label for="l-notes">Anything I should know? <span class="form__opt">optional</span></label>
+          <textarea id="l-notes" name="notes" rows="3"></textarea>
+        </div>
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="form__send">
+          <button class="btn btn--blush btn--lg" type="submit" id="live-go" disabled>Pick a time first</button>
+          <p class="form__fine">Your details come to me only, to look after your appointment.</p>
+        </div>
       </form>
+
+      <div class="form__status live__done" id="live-status" role="status" aria-live="polite" hidden></div>
     </div>
 
-    <aside class="book__side" aria-label="Other ways to reach me">
-      <div class="side-card">
-        <h3>Rather message?</h3>
-        <p>Ask me anything before you book.</p>
-        <a class="btn btn--ghost btn--block" href="https://ig.me/m/torimed.spa" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg>
-          Message @torimed.spa
-        </a>
-      </div>
-      <div class="side-card">
-        <h3>Where to find me</h3>
-        <address>
-          ToriMed Spa<br>
-          Inside The Beauty Collective<br>
-          191 Main Street<br>
-          Fredericton, NB E3A 1E1
-        </address>
-        <p class="side-card__note">Free parking.</p>
-        <a class="btn btn--ghost btn--block" href="https://maps.google.com/?cid=3807310203583079861" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-          Get directions
-        </a>
-      </div>
-    </aside>
+    <p class="live__alt">Prefer to ask first? <a href="/book/request/">Send me a booking request</a> or <a href="https://ig.me/m/torimed.spa" data-ig>message me on Instagram</a>.</p>
   </div>
 </section>
 
@@ -303,15 +254,15 @@
       <ol class="steps">
         <li>
           <h3>Choose your services</h3>
-          <p>Add them from the price list. You see the time and the total before you send anything.</p>
+          <p>Tap everything you want in this visit. You see the time and the total as you go.</p>
         </li>
         <li>
-          <h3>Tell me when you are free</h3>
-          <p>Pick a day and the time of day that suits you.</p>
+          <h3>Pick an open time</h3>
+          <p>Every time shown is free in my calendar right now.</p>
         </li>
         <li>
-          <h3>Get your confirmation</h3>
-          <p>I reply to confirm your appointment time.</p>
+          <h3>You are booked</h3>
+          <p>Add your name and mobile number and it goes straight into my calendar.</p>
         </li>
       </ol>
       <a class="btn btn--coal" href="/services/">See services and prices</a>
@@ -321,11 +272,11 @@
       <div class="faq">
         <details>
           <summary>How does booking work?</summary>
-          <div class="faq__a"><p>Choose your services from the price list, pick a day and the time of day that suits you, and send your request. I reply to confirm your appointment time.</p></div>
+          <div class="faq__a"><p>Choose your services, pick any open time from my calendar, and add your name and mobile number. Your appointment goes straight into my calendar. If you would rather ask first, you can send me a booking request instead.</p></div>
         </details>
         <details>
           <summary>Can I book more than one service?</summary>
-          <div class="faq__a"><p>Yes. Add each one from the price list and send them as one request. You see the total and the time before you send anything.</p></div>
+          <div class="faq__a"><p>Yes. Choose up to four for one visit and I show you the times that fit them back to back. You see the total and the time before you book.</p></div>
         </details>
         <details>
           <summary>Where are you located?</summary>
@@ -396,6 +347,6 @@
 </div>
 
 <script>window.TORI_SERVICES = {"brazilian":{"name":"Brazilian wax","price":70,"min":30},"brazilian-male":{"name":"Male anatomy Brazilian","price":90,"min":45},"vajacial":{"name":"Vajacial","price":25,"min":15,"with":["brazilian"],"note":"A rejuvenating jelly mask, perfect for soothing and hydration after a Brazilian wax."},"bikini":{"name":"Bikini wax","price":30,"min":15},"full-leg":{"name":"Full leg wax","price":72,"min":30},"half-leg":{"name":"Half leg wax","price":35,"min":15},"underarm":{"name":"Underarm wax","price":20,"min":15},"full-arm":{"name":"Full arm wax","price":50,"min":30},"half-arm":{"name":"Half arm wax","price":25,"min":30},"back":{"name":"Back wax","price":58,"min":30},"chest":{"name":"Chest wax","price":52,"min":45},"full-face":{"name":"Full face wax","price":50,"min":30},"brow-wax":{"name":"Brow wax","price":29,"min":15},"lip":{"name":"Lip wax","price":15,"min":15},"chin":{"name":"Chin wax","price":20,"min":15},"nose":{"name":"Nose wax","price":20,"min":15},"sideburn":{"name":"Sideburn wax","price":15,"min":15},"brow-lam":{"name":"Brow lamination","price":95,"min":45},"brow-tint-wax":{"name":"Brow tint and wax","price":54,"min":30},"brow-lam-lash-lift":{"name":"Brow lamination and lash lift","price":209,"min":105},"lash-lift-tint":{"name":"Lash lift and tint","price":100,"min":60},"korean-lash-lift":{"name":"Korean lash lift","price":150,"min":75},"facial-30":{"name":"30 minute facial","price":50,"min":45},"facial-60":{"name":"60 minute facial","price":105,"min":75},"dermaplaning":{"name":"Dermaplaning facial","price":130,"min":75},"microchanneling":{"name":"Microchanneling","price":300,"min":75},"mani-express":{"name":"Express manicure","price":35,"min":45},"mani-classic":{"name":"Classic manicure","price":42,"min":45},"mani-gel-express":{"name":"Express gel manicure","price":55,"min":75},"mani-gel-classic":{"name":"Classic gel manicure","price":62,"min":75},"gel-removal":{"name":"Gel polish removal","price":20,"min":15,"with":["mani-express","mani-classic","mani-gel-express","mani-gel-classic","pedi-express","pedi-classic","pedi-gel-express","pedi-gel-classic"],"note":"For gel polish you already have on."},"pedi-express":{"name":"Express pedicure","price":45,"min":75},"pedi-classic":{"name":"Classic pedicure","price":55,"min":90},"pedi-gel-express":{"name":"Express gel pedicure","price":55,"min":75},"pedi-gel-classic":{"name":"Classic gel pedicure","price":65,"min":90}};</script>
-<script src="/assets/main.js?v=15" defer></script>
+<script src="/assets/main.js?v=16" defer></script>
 </body>
 </html>

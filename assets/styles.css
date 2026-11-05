@@ -668,3 +668,5 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
 .live__alt { margin-top: 28px; color: var(--on-dark-2); }
 .live__alt a { color: var(--blush); text-underline-offset: 4px; }
 .live .btn:disabled, .live .btn:disabled:hover { background: var(--blush); opacity: 0.5; cursor: not-allowed; }
+.book__live { margin-top: 10px; color: var(--on-dark-2); }
+.book__live a { color: var(--blush); text-underline-offset: 4px; }

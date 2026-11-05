@@ -193,6 +193,7 @@
         [].forEach.call(root.querySelectorAll('.live__step'), function (s) { s.hidden = true; });
         statusEl.textContent = '';
         statusEl.classList.remove('live__done--err');
+        try { sessionStorage.removeItem('torimed-visit'); } catch (e) { /* nothing saved */ }
         statusEl.appendChild(node('p', 'live__done-h', 'You are booked!'));
         statusEl.appendChild(node('p', '', what + ', ' + when + '.'));
         statusEl.appendChild(node('p', '', 'I am at The Beauty Collective, 191 Main Street, Fredericton. See you then.'));
@@ -213,6 +214,27 @@
     });
   });
 
+  // A visit picked on the site's price lists arrives already chosen here.
+  function carryVisit() {
+    var map = {}, visit = [];
+    try { map = JSON.parse(el('live-square').textContent); visit = JSON.parse(sessionStorage.getItem('torimed-visit') || '[]'); } catch (e) { return; }
+    var want = [];
+    (map.pairs || []).forEach(function (p) {
+      var a = visit.indexOf(p[0]), b = visit.indexOf(p[1]);
+      if (a >= 0 && b >= 0) { want.push(p[2]); visit = visit.filter(function (x) { return x !== p[0] && x !== p[1]; }); }
+    });
+    visit.forEach(function (id) { if (map.ids && map.ids[id]) want.push(map.ids[id]); });
+    want = want.filter(function (id, i) { return byId[id] && want.indexOf(id) === i; }).slice(0, MAX);
+    if (!want.length) return;
+    want.forEach(function (id) {
+      var chip = groupsEl.querySelector('.live__chip[data-id="' + id + '"]');
+      var box = chip && chip.closest('details');
+      if (box) box.open = true;
+    });
+    picked = [];
+    want.forEach(function (id) { toggle(id); });
+  }
+
   // ---------------------------------------------------------------- start
 
   api('/api/book/services').then(function (r) {
@@ -225,6 +247,7 @@
     services.forEach(function (s) { byId[s.id] = s; });
     drawServices();
     setGo();
+    carryVisit();
   }, function () {
     svcHint.textContent = 'My online calendar is not available right now. Please send me a booking request instead.';
   });

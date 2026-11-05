@@ -1,0 +1,54 @@
+<!-- Book online: live times from Tori's Square calendar (assets/booking.js) -->
+<section class="band band--coal book book--page live" id="book" data-desk="{{desk}}" data-ads="{{ads}}">
+  <div class="wrap live__in">
+    <h1>Book your appointment</h1>
+    <p class="book__lede">Choose your services, then pick any open time. It goes straight into my calendar and you get a confirmation right away.</p>
+
+    <div class="form live__steps">
+      <section class="form__block live__step" aria-labelledby="live-s1">
+        <h2 class="live__h" id="live-s1"><span class="live__n">1</span> Choose your services</h2>
+        <p class="live__hint" id="live-svc-hint">Loading my menu...</p>
+        <div class="live__groups" id="live-groups" hidden></div>
+        <p class="live__sum" id="live-sum" hidden></p>
+      </section>
+
+      <section class="form__block live__step" aria-labelledby="live-s2" id="live-when" data-locked>
+        <h2 class="live__h" id="live-s2"><span class="live__n">2</span> Pick a day and time</h2>
+        <p class="live__hint" id="live-time-hint">Choose a service first and I will show you my open times.</p>
+        <div class="live__days" id="live-days" role="radiogroup" aria-label="Day" hidden></div>
+        <div class="live__times" id="live-times" role="radiogroup" aria-label="Start time" hidden></div>
+      </section>
+
+      <form class="form__block live__step" aria-labelledby="live-s3" id="live-form" data-locked novalidate>
+        <h2 class="live__h" id="live-s3"><span class="live__n">3</span> Your details</h2>
+        <div class="form__row">
+          <div class="form__field">
+            <label for="l-name">Name</label>
+            <input type="text" id="l-name" name="name" autocomplete="name" required>
+          </div>
+          <div class="form__field">
+            <label for="l-phone">Mobile number</label>
+            <input type="tel" id="l-phone" name="phone" autocomplete="tel" inputmode="tel" required>
+          </div>
+        </div>
+        <div class="form__field">
+          <label for="l-email">Email <span class="form__opt">for your confirmation</span></label>
+          <input type="email" id="l-email" name="email" autocomplete="email">
+        </div>
+        <div class="form__field">
+          <label for="l-notes">Anything I should know? <span class="form__opt">optional</span></label>
+          <textarea id="l-notes" name="notes" rows="3"></textarea>
+        </div>
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="form__send">
+          <button class="btn btn--blush btn--lg" type="submit" id="live-go" disabled>Pick a time first</button>
+          <p class="form__fine">Your details come to me only, to look after your appointment.</p>
+        </div>
+      </form>
+
+      <div class="form__status live__done" id="live-status" role="status" aria-live="polite" hidden></div>
+    </div>
+
+    <p class="live__alt">Prefer to ask first? <a href="/book/">Send me a booking request</a> or <a href="https://ig.me/m/torimed.spa" data-ig>message me on Instagram</a>.</p>
+  </div>
+</section>

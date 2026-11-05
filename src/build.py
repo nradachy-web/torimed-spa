@@ -161,14 +161,14 @@ def catalog_json():
     return json.dumps(slim, ensure_ascii=False, separators=(",", ":"))
 
 
-def page(meta, main, preloads, jsonld, body_attrs="", chrome=None):
+def page(meta, main, preloads, jsonld, body_attrs="", chrome=None, noindex=False):
     """chrome=(header, footer) swaps the site menu and footer for a landing page's own, and keeps the page out of search."""
     return fill(
         tpl("base.html"),
         title=meta["title"],
         description=meta["description"],
         canonical=meta["canonical"],
-        robots='<meta name="robots" content="noindex, follow">\n' if chrome else "",
+        robots='<meta name="robots" content="noindex, follow">\n' if chrome or noindex else "",
         og_title=meta.get("og_title", meta["title"]),
         og_image=meta["og_image"],
         preloads=preloads,
@@ -586,6 +586,22 @@ def build_book():
     return page(meta, main, "", simple_jsonld("Book an appointment", "/book/", faqs))
 
 
+def build_book_online():
+    """torimed.ca/book-online/: services, open times and booking straight from Tori's Square calendar.
+
+    Everything live comes from her booking desk (assets/booking.js). Until the switch from Vagaro
+    the page is kept out of search and the sitemap, nothing links to it, and the desk keeps
+    booking shut, so the page shows real open times but cannot book.
+    """
+    meta = simple_meta(
+        "/book-online/", "Book online | ToriMed Spa",
+        "Choose your services and book an open time with Tori Kruse at ToriMed Spa in Fredericton.",
+    )
+    main = fill(tpl("book_online.html"), desk=DESK, ads="AW-18504296452/HyDGCOiv25cdEITQxPdE")
+    script = f'<script src="/assets/booking.js?v={V}" defer></script>'
+    return page(meta, main, script, simple_jsonld("Book online", "/book-online/", []), noindex=True)
+
+
 def build_services():
     panels = []
     for c in CATEGORIES:
@@ -777,6 +793,7 @@ def main():
     for lp in LANDINGS:  # ad landing pages stay out of the sitemap
         write(f'{lp["slug"]}/index.html', build_landing(lp))
     write("review/index.html", build_review())  # a redirect, also out of the sitemap
+    write("book-online/index.html", build_book_online())  # live Square booking, out of the sitemap until the switch
     write("login/index.html", build_login())  # Tori's sign-in to her booking desk, out of the sitemap
     write("llms.txt", build_llms())
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

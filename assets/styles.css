@@ -635,3 +635,36 @@ h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------------------------------------------------------------- book online (live Square times) */
+.live__in { max-width: 860px; }
+.live__steps { margin-top: 32px; display: grid; gap: 14px; }
+.live__h { font-family: var(--display); text-transform: uppercase; letter-spacing: var(--caps); font-size: 1.125rem; font-weight: 400; display: flex; align-items: center; gap: 12px; }
+.live__n { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--blush); color: var(--black); font-family: var(--text); font-size: 0.9375rem; letter-spacing: 0; }
+.live__hint { color: var(--on-dark-2); }
+.live__step[data-locked] { opacity: 0.55; }
+.live__step[data-locked] .live__h .live__n { background: var(--line-dark); color: var(--on-dark); }
+.live__groups { display: grid; gap: 10px; }
+.live__group { border: 1px solid var(--line-dark); border-radius: 10px; }
+.live__gname { cursor: pointer; padding: 14px 18px; font-size: 1.0625rem; list-style-position: inside; }
+.live__group[open] .live__gname { border-bottom: 1px solid var(--line-dark); }
+.live__chips { display: grid; gap: 8px; padding: 14px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.live__chip { text-align: left; display: grid; gap: 4px; padding: 12px 14px; min-height: 64px; border-radius: 8px; border: 1px solid var(--line-dark); background: transparent; color: var(--on-dark); font: inherit; cursor: pointer; transition: background 0.15s var(--ease), border-color 0.15s var(--ease); }
+.live__chip:hover { border-color: var(--on-dark); }
+.live__chip[aria-pressed="true"] { background: var(--blush); border-color: var(--blush); color: var(--black); }
+.live__cname { font-size: 1rem; }
+.live__cmeta { font-size: 0.875rem; opacity: 0.75; }
+.live__sum { padding: 12px 16px; border-radius: 8px; background: rgba(247, 206, 208, 0.12); color: var(--on-dark); }
+.live__days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; }
+.live__day { flex: 0 0 auto; scroll-snap-align: start; display: grid; gap: 2px; justify-items: center; min-width: 76px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line-dark); background: transparent; color: var(--on-dark); font: inherit; cursor: pointer; }
+.live__dname { font-size: 0.8125rem; text-transform: uppercase; letter-spacing: var(--caps); opacity: 0.75; }
+.live__ddate { font-size: 1rem; white-space: nowrap; }
+.live__day[aria-checked="true"], .live__time[aria-checked="true"] { background: var(--blush); border-color: var(--blush); color: var(--black); }
+.live__times { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+.live__time { min-height: 48px; border-radius: 8px; border: 1px solid var(--line-dark); background: transparent; color: var(--on-dark); font: inherit; cursor: pointer; }
+.live__day:hover, .live__time:hover { border-color: var(--on-dark); }
+.live__done-h { font-family: var(--display); text-transform: uppercase; letter-spacing: var(--caps); font-size: 1.375rem; }
+.live__done--err { background: var(--coal-2); color: var(--on-dark); border: 1px solid var(--blush); }
+.live__alt { margin-top: 28px; color: var(--on-dark-2); }
+.live__alt a { color: var(--blush); text-underline-offset: 4px; }
+.live .btn:disabled, .live .btn:disabled:hover { background: var(--blush); opacity: 0.5; cursor: not-allowed; }
